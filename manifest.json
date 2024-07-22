@@ -1,0 +1,9 @@
+{
+  "name": "NoLatin",
+  "id": "1397186413828868287",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma", "figjam"],
+  "containsWidget": true,
+  "widgetApi": "1.0.0"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "nolatin",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "postbuild": "echo 'widget.register(Widget);' >> ./code.js",
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc-watch -p tsconfig.json --onSuccess \"npm run postbuild\""
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "*",
+    "@figma/widget-typings": "*",
+    "tsc-watch": "^5.0.3",
+    "typescript": "*"
+  }
+}
