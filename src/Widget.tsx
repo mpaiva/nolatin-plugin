@@ -1,9 +1,10 @@
+
 const { widget } = figma;
 const {
   useSyncedState,
   useSyncedMap,
   usePropertyMenu,
-  AutoLayout,
+  AutoLayout, 
   Input,
   SVG,
   Frame,
@@ -12,22 +13,17 @@ const {
 
 const Widget = () => {
   const [pageIds, setPageIds] = useSyncedState<string[]>("pageIds", []);
-  const [selectedPageId, setSelectedPageId] = useSyncedState<string>("selectedPageId", "");
   const pages = useSyncedMap<Page>("pages");
 
   const addPage = () => {
     const pageId = randomId();
-    pages.set(pageId, { title: "", description: "" });
+    pages.set(pageId, { title: "Untitled Page", description: "" });
     setPageIds([...pageIds, pageId]);
-    setSelectedPageId(pageId); // Select the new page by default
   };
 
   const deletePage = (pageId: string) => {
     pages.delete(pageId);
     setPageIds(pageIds.filter((id) => id !== pageId));
-    if (selectedPageId === pageId) {
-      setSelectedPageId(pageIds.length > 1 ? pageIds[0] : ""); // Select the first page or clear selection
-    }
   };
 
   const editPage = (pageId: string, field: 'title' | 'description', value: string) => {
@@ -37,58 +33,56 @@ const Widget = () => {
     }
   };
 
-  const propertyMenuItems: WidgetPropertyMenuItem[] = [
-    {
-      itemType: "action",
-      propertyName: "add",
-      tooltip: "Add Page",
-      icon: AddIconLightSvg,
-    },
-  ];
-
-  if (pageIds.length > 0) {
-    propertyMenuItems.unshift(
+  usePropertyMenu(
+    [
       {
-        itemType: "dropdown",
-        propertyName: "selected-page",
-        options: pageIds.map((id) => ({
-          option: id,
-          label: pages.get(id)?.title || "Untitled",
-        })),
-        selectedOption: selectedPageId,
-        tooltip: "Select Page",
+        itemType: "action",
+        propertyName: "title",
+        tooltip: "Pages",
+        icon: '', // No icon, just a text tooltip
       },
-      { itemType: "separator" as const }
-    );
-  }
-
-  usePropertyMenu(propertyMenuItems, (event) => {
-    if (event.propertyName === "add") {
-      addPage();
-    } else if (event.propertyName === "selected-page") {
-      setSelectedPageId(event.propertyValue as string);
+      { 
+        itemType: "separator" as const 
+      },
+      {
+        itemType: "action",
+        propertyName: "add",
+        tooltip: "Add Page",
+        icon: AddIconLightSvg,
+      }
+    ],
+    (event) => {
+      if (event.propertyName === "add") {
+        addPage();
+      }
     }
-  });
+  );
 
   return (
-    <WidgetContainer>
+    <AutoLayout direction="vertical"   verticalAlignItems="center" horizontalAlignItems="center">
       {pageIds.length === 0 ? (
-        <Text>No pages available. Click the add button to create a new page.</Text>
+       
+       <AutoLayout width={374} height={194} padding={16} fill="#ffffff" cornerRadius={8} verticalAlignItems="center" horizontalAlignItems="center">
+         <Text horizontalAlignText="center" fontSize={16} fill="#555" width="fill-parent">
+           Start by creating an intent framing page to host your priority guides.
+         </Text>
+       </AutoLayout>
+      
       ) : (
-        pageIds.map((pageId) => (
-          selectedPageId === pageId && (
-            <PageView
-              key={pageId}
-              pageId={pageId}
-              page={pages.get(pageId)}
-              deletePage={deletePage}
-              editPage={editPage}
-            />
-          )
-        ))
+        <WidgetContainer>
+          <AutoLayout direction="horizontal" spacing={16}>
+            {pageIds.map((pageId) => (
+              <PageView
+                key={pageId}
+                pageId={pageId}
+                page={pages.get(pageId)}
+                deletePage={deletePage}
+                editPage={editPage}
+              />
+            ))}
+          </AutoLayout>
+        </WidgetContainer>
       )}
-    </WidgetContainer>
+    </AutoLayout>
   );
 };
-
- 
