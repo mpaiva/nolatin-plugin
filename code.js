@@ -55,8 +55,23 @@ const ContentView = ({ content, deleteContent, cloneContent, editContent, moveUp
             figma.widget.h(IconButton, { src: CloneIconSvg, onClick: () => cloneContent(content.id, content) }),
             figma.widget.h(IconButton, { src: DeleteIconSvg, onClick: () => deleteContent(content.id) })),
         figma.widget.h(Dropdown, { value: content.type, onChange: (value) => editContent(content.id, 'type', value), options: [
+                { label: 'Sub-section', value: 'SubSection' },
+                { label: 'Heading text', value: 'HeadingText' },
+                { label: 'Heading link', value: 'HeadingLink' },
+                { label: 'Text paragraph', value: 'TextParagraph' },
+                { label: 'Text link', value: 'TextLink' },
+                { label: 'Input Text', value: 'InputText' },
+                { label: 'Input Select', value: 'InputSelect' },
                 { label: 'Button', value: 'Button' },
-                { label: 'Text Link', value: 'TextLink' },
+                { label: 'Image', value: 'Image' },
+                { label: 'Bullet list of text', value: 'BulletListText' },
+                { label: 'Bullet list of links', value: 'BulletListLinks' },
+                { label: 'Numbered list of text', value: 'NumberedListText' },
+                { label: 'Numbered list of links', value: 'NumberedListLinks' },
+                { label: 'Input Single Select List', value: 'InputRadioButtonList' },
+                { label: 'Input Multi Select List', value: 'InputCheckboxList' },
+                { label: 'Table', value: 'Table' },
+                { label: 'Responsive table', value: 'ListGroup' }
             ], placeholder: "Content Type", isOpen: isOpen === content.id, onToggle: toggleDropdown }),
         (() => {
             switch (content.type) {
