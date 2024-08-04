@@ -37,8 +37,23 @@ const ContentView = ({
         value={content.type}
         onChange={(value) => editContent(content.id, 'type', value)}
         options={[
+          { label: 'Sub-section', value: 'SubSection' },
+          { label: 'Heading text', value: 'HeadingText' },
+          { label: 'Heading link', value: 'HeadingLink' },
+          { label: 'Text paragraph', value: 'TextParagraph' },
+          { label: 'Text link', value: 'TextLink' },
+          { label: 'Input Text', value: 'InputText' },
+          { label: 'Input Select', value: 'InputSelect' },
           { label: 'Button', value: 'Button' },
-          { label: 'Text Link', value: 'TextLink' },  
+          { label: 'Image', value: 'Image' },
+          { label: 'Bullet list of text', value: 'BulletListText' },
+          { label: 'Bullet list of links', value: 'BulletListLinks' },
+          { label: 'Numbered list of text', value: 'NumberedListText' },
+          { label: 'Numbered list of links', value: 'NumberedListLinks' },
+          { label: 'Input Single Select List', value: 'InputRadioButtonList' },
+          { label: 'Input Multi Select List', value: 'InputCheckboxList' },
+          { label: 'Table', value: 'Table' },
+          { label: 'Responsive table', value: 'ListGroup' },
         ]}
         placeholder="Content Type"
         isOpen={isOpen === content.id}
@@ -46,25 +61,54 @@ const ContentView = ({
       />
       {(() => {
         switch (content.type) {
-          case 'Button':
-            return (
-              <>
-                <Input
-                  value={content.descriptiveLabel || ''}
-                  onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-                  placeholder="Descriptive Label"
-                  fontSize={16}
-                  width="fill-parent"
-                />
-                <Input
-                  value={content.action || ''}
-                  onTextEditEnd={(e) => editContent(content.id, 'action', e.characters)}
-                  placeholder="Action"
-                  fontSize={16}
-                  width="fill-parent"
-                />
-              </>
-            );
+          // case 'SubSection':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'HeadingText':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'HeadingLink':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'TextParagraph':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
           case 'TextLink':
             return (
               <>
@@ -84,6 +128,157 @@ const ContentView = ({
                 />
               </>
             );
+          // case 'InputText':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'InputSelect':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          case 'Button':
+            return (
+              <>
+                <Input
+                  value={content.descriptiveLabel || ''}
+                  onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+                  placeholder="Descriptive Label"
+                  fontSize={16}
+                  width="fill-parent"
+                />
+                <Input
+                  value={content.action || ''}
+                  onTextEditEnd={(e) => editContent(content.id, 'action', e.characters)}
+                  placeholder="Action"
+                  fontSize={16}
+                  width="fill-parent"
+                />
+              </>
+            );
+          // case 'Image':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'BulletListText':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'BulletListLinks':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'NumberedListText':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'NumberedListLinks':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'InputRadioButtonList':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'InputCheckboxList':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'Table':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
+          // case 'ListGroup':
+          //   return (
+          //     <>
+          //       <Input
+          //         value={content.descriptiveLabel || ''}
+          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
+          //         placeholder="Descriptive Link"
+          //         fontSize={16}
+          //         width="fill-parent"
+          //       />
+          //     </>
+          //   );
           default:
             return null;
         }
