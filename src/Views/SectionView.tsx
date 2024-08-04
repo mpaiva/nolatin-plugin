@@ -1,9 +1,11 @@
+// SectionView.tsx
+
 interface SectionViewProps {
   sectionId: string;
   section: Section;
   deleteSection: (sectionId: string) => void;
   cloneSection: (sectionId: string, section: Section) => void;
-  editSection: (sectionId: string, field: 'name' | 'description' | 'type', value: string) => void;
+  editSection: (sectionId: string, field: keyof Section, value: any) => void;
   moveUpSection: (sectionId: string) => void;
   moveDownSection: (sectionId: string) => void;
   isOpen: boolean;
@@ -25,52 +27,60 @@ const SectionView = ({
   canMoveUp,
   canMoveDown,
 }: SectionViewProps) => {
-  const contents = useSyncedMap<Content>(`contents-${sectionId}`);
-  const [contentOrder, setContentOrder] = useSyncedState<string[]>(`contentOrder-${sectionId}`, []);
-
   const addContent = () => {
     const contentId = randomId();
-    contents.set(contentId, { id: contentId, type: 'Button' }); // Default to Button
-    setContentOrder([...contentOrder, contentId]);
+    const newContent: Content = {
+      id: contentId,
+      type: 'Button',
+      title: '',
+      description: '',
+      url: '',
+      children: [],
+      draft: false,
+    };
+    const updatedContents = [...section.children, newContent];
+    editSection(sectionId, 'children', updatedContents);
   };
 
   const deleteContent = (contentId: string) => {
-    contents.delete(contentId);
-    setContentOrder(contentOrder.filter(id => id !== contentId));
+    const updatedContents = section.children.filter(content => content.id !== contentId);
+    editSection(sectionId, 'children', updatedContents);
   };
 
   const cloneContent = (contentId: string, content: Content) => {
     const clonedContentId = randomId();
-    contents.set(clonedContentId, { ...content, id: clonedContentId });
-  
-    const index = contentOrder.indexOf(contentId);
-    const newOrder = [...contentOrder];
-    newOrder.splice(index + 1, 0, clonedContentId);  
-    setContentOrder(newOrder);
+    const clonedContent: Content = { ...content, id: clonedContentId, children: [...content.children] };
+    const index = section.children.findIndex(c => c.id === contentId);
+    const updatedContents = [
+      ...section.children.slice(0, index + 1),
+      clonedContent,
+      ...section.children.slice(index + 1)
+    ];
+    editSection(sectionId, 'children', updatedContents);
   };
 
-  const editContent = (contentId: string, field: string, value: string) => {
-    const content = contents.get(contentId);
-    if (content) {
-      contents.set(contentId, { ...content, [field]: value });
-    }
+  const editContent = (contentId: string, field: keyof Content, value: string) => {
+    const updatedContents = section.children.map(content =>
+      content.id === contentId ? { ...content, [field]: value } : content
+    );
+    editSection(sectionId, 'children', updatedContents);
   };
 
   const moveUpContent = (contentId: string) => {
-    const index = contentOrder.indexOf(contentId);
+    const index = section.children.findIndex(c => c.id === contentId);
     if (index > 0) {
-      const newOrder = [...contentOrder];
-      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-      setContentOrder(newOrder);
+      const updatedContents = [...section.children];
+      [updatedContents[index - 1], updatedContents[index]] = [updatedContents[index], updatedContents[index - 1]];
+      editSection(sectionId, 'children', updatedContents);
     }
   };
 
   const moveDownContent = (contentId: string) => {
-    const index = contentOrder.indexOf(contentId);
-    if (index < contentOrder.length - 1) {
-      const newOrder = [...contentOrder];
-      [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
-      setContentOrder(newOrder);
+    const index = section.children.findIndex(c => c.id === contentId);
+    if (index < section.children.length - 1) {
+      const updatedContents = [...section.children];
+      [updatedContents[index + 1], updatedContents[index]] = [updatedContents[index], updatedContents[index + 1]];
+      editSection(sectionId, 'children', updatedContents);
     }
   };
 
@@ -102,8 +112,8 @@ const SectionView = ({
         width="fill-parent"
       />
       <Dropdown
-        value={section.type}
-        onChange={(value) => editSection(sectionId, 'type', value)}
+        value={section.element}
+        onChange={(value) => editSection(sectionId, 'element', value)}
         options={[
           { label: 'Section', value: 'Section' },
           { label: 'Header', value: 'Header' },
@@ -111,7 +121,7 @@ const SectionView = ({
           { label: 'Navigation', value: 'Navigation' },
           { label: 'Search', value: 'Search' },
           { label: 'Footer', value: 'Footer' },
-          { label: 'Complementry', value: 'Complementry' },
+          { label: 'Complementary', value: 'Complementary' },
           { label: 'Alert', value: 'Alert' },
           { label: 'Article', value: 'Article' },
         ]}
@@ -119,25 +129,21 @@ const SectionView = ({
         isOpen={isOpen}
         onToggle={toggleDropdown}
       />
-      {contentOrder.length > 0 && (
+      {section.children.length > 0 && (
         <AutoLayout width="fill-parent" direction="vertical" spacing={8}>
-          {contentOrder.map((contentId) => {
-            const content = contents.get(contentId);
-            if (!content) return null; // Handle deleted contents gracefully
-            return (
-              <ContentView
-                key={contentId}
-                content={content}
-                deleteContent={deleteContent}
-                editContent={editContent}
-                cloneContent={cloneContent}
-                moveUpContent={moveUpContent}
-                moveDownContent={moveDownContent}
-                canMoveUp={contentOrder.indexOf(contentId) > 0}
-                canMoveDown={contentOrder.indexOf(contentId) < contentOrder.length - 1}
-              />
-            );
-          })}
+          {section.children.map((content, index) => (
+            <ContentView
+              key={content.id}
+              content={content}
+              deleteContent={deleteContent}
+              editContent={editContent}
+              cloneContent={cloneContent}
+              moveUpContent={moveUpContent}
+              moveDownContent={moveDownContent}
+              canMoveUp={index > 0}
+              canMoveDown={index < section.children.length - 1}
+            />
+          ))}
         </AutoLayout>
       )}
       <AutoLayout width="fill-parent" horizontalAlignItems="center" padding={12} cornerRadius={4} fill="#0000FF" hoverStyle={{ fill: "#1717d8" }} onClick={addContent}>

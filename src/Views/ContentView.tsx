@@ -1,8 +1,10 @@
+// ContentView.tsx
+
 interface ContentViewProps {
   content: Content;
   deleteContent: (contentId: string) => void;
   cloneContent: (contentId: string, content: Content) => void;
-  editContent: (contentId: string, field: string, value: string) => void;
+  editContent: (contentId: string, field: keyof Content, value: string) => void;
   moveUpContent: (contentId: string) => void;
   moveDownContent: (contentId: string) => void;
   canMoveUp: boolean;
@@ -61,226 +63,72 @@ const ContentView = ({
       />
       {(() => {
         switch (content.type) {
-          // case 'SubSection':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'HeadingText':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'HeadingLink':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'TextParagraph':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
           case 'TextLink':
             return (
               <>
                 <Input
-                  value={content.descriptiveLabel || ''}
-                  onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-                  placeholder="Descriptive Link"
+                  value={content.title}
+                  onTextEditEnd={(e) => editContent(content.id, 'title', e.characters)}
+                  placeholder="Link Title"
                   fontSize={16}
                   width="fill-parent"
                 />
                 <Input
-                  value={content.destinationURL || ''}
-                  onTextEditEnd={(e) => editContent(content.id, 'destinationURL', e.characters)}
-                  placeholder="Destination URL"
+                  value={content.url}
+                  onTextEditEnd={(e) => editContent(content.id, 'url', e.characters)}
+                  placeholder="Link URL"
                   fontSize={16}
                   width="fill-parent"
                 />
               </>
             );
-          // case 'InputText':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'InputSelect':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
           case 'Button':
             return (
               <>
                 <Input
-                  value={content.descriptiveLabel || ''}
-                  onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-                  placeholder="Descriptive Label"
+                  value={content.title}
+                  onTextEditEnd={(e) => editContent(content.id, 'title', e.characters)}
+                  placeholder="Button Label"
                   fontSize={16}
                   width="fill-parent"
                 />
                 <Input
-                  value={content.action || ''}
-                  onTextEditEnd={(e) => editContent(content.id, 'action', e.characters)}
-                  placeholder="Action"
+                  value={content.url}
+                  onTextEditEnd={(e) => editContent(content.id, 'url', e.characters)}
+                  placeholder="Button URL"
                   fontSize={16}
                   width="fill-parent"
                 />
               </>
             );
-          // case 'Image':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'BulletListText':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'BulletListLinks':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'NumberedListText':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'NumberedListLinks':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'InputRadioButtonList':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'InputCheckboxList':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'Table':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
-          // case 'ListGroup':
-          //   return (
-          //     <>
-          //       <Input
-          //         value={content.descriptiveLabel || ''}
-          //         onTextEditEnd={(e) => editContent(content.id, 'descriptiveLabel', e.characters)}
-          //         placeholder="Descriptive Link"
-          //         fontSize={16}
-          //         width="fill-parent"
-          //       />
-          //     </>
-          //   );
           default:
-            return null;
+            return (
+              <>
+                <Input
+                  value={content.title}
+                  onTextEditEnd={(e) => editContent(content.id, 'title', e.characters)}
+                  placeholder="Content Title"
+                  fontSize={16}
+                  width="fill-parent"
+                />
+                <Input
+                  value={content.description}
+                  onTextEditEnd={(e) => editContent(content.id, 'description', e.characters)}
+                  placeholder="Content Description"
+                  fontSize={16}
+                  width="fill-parent"
+                />
+                {content.type === 'Image' && (
+                  <Input
+                    value={content.url}
+                    onTextEditEnd={(e) => editContent(content.id, 'url', e.characters)}
+                    placeholder="Image URL"
+                    fontSize={16}
+                    width="fill-parent"
+                  />
+                )}
+              </>
+            );
         }
       })()}
     </AutoLayout>

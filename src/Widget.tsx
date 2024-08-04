@@ -12,25 +12,40 @@ const {
 } = widget;
 
 const Widget = () => {
-  const [pageIds, setPageIds] = useSyncedState<string[]>("pageIds", []);
-  const pages = useSyncedMap<Page>("pages");
+  const [pages, setPages] = useSyncedState<Page[]>("pages", []);
 
   const addPage = () => {
     const pageId = randomId();
-    pages.set(pageId, { title: "Untitled Page", description: "" });
-    setPageIds([...pageIds, pageId]);
+    const newPage: Page = {
+      id: pageId,
+      title: "Untitled Page",
+      description: "",
+      sections: [],
+    };
+    setPages([...pages, newPage]);
   };
 
   const deletePage = (pageId: string) => {
-    pages.delete(pageId);
-    setPageIds(pageIds.filter((id) => id !== pageId));
+    setPages(pages.filter(page => page.id !== pageId));
   };
 
   const editPage = (pageId: string, field: 'title' | 'description', value: string) => {
-    const page = pages.get(pageId);
-    if (page) {
-      pages.set(pageId, { ...page, [field]: value });
-    }
+    setPages(
+      pages.map((page) =>
+        page.id === pageId ? { ...page, [field]: value } : page
+      )
+    );
+  };
+  const updatePageSections = (pageId: string, sections: Section[]) => {
+    const updatedPages = pages.map(page => 
+      page.id === pageId ? { ...page, sections } : page
+    );
+    setPages(updatedPages);
+  };
+
+  const exportJson = () => {
+    const jsonContent = { json_content: { pages, editing: null } };
+    console.log(jsonContent);
   };
 
   usePropertyMenu(
@@ -59,30 +74,34 @@ const Widget = () => {
   );
 
   return (
-    <AutoLayout direction="vertical"   verticalAlignItems="center" horizontalAlignItems="center">
-      {pageIds.length === 0 ? (
-       
-       <AutoLayout width={374} height={194} padding={16} fill="#ffffff" cornerRadius={8} verticalAlignItems="center" horizontalAlignItems="center">
-         <Text horizontalAlignText="center" fontSize={16} fill="#555" width="fill-parent">
-           Start by creating an intent framing page to host your priority guides.
-         </Text>
-       </AutoLayout>
-      
+    <AutoLayout direction="vertical" verticalAlignItems="center" horizontalAlignItems="center">
+      {pages.length === 0 ? (
+        <AutoLayout width={374} height={194} padding={16} fill="#ffffff" cornerRadius={8} verticalAlignItems="center" horizontalAlignItems="center">
+          <Text horizontalAlignText="center" fontSize={16} fill="#555" width="fill-parent">
+            Start by creating an intent framing page to host your priority guides.
+          </Text>
+        </AutoLayout>
       ) : (
-        <WidgetContainer>
-          <AutoLayout direction="horizontal" spacing={16}>
-            {pageIds.map((pageId) => (
-              <PageView
-                key={pageId}
-                pageId={pageId}
-                page={pages.get(pageId)}
-                deletePage={deletePage}
-                editPage={editPage}
-              />
-            ))}
-          </AutoLayout>
-        </WidgetContainer>
+        <AutoLayout direction="horizontal" spacing={16}>
+          {pages.map(page => (
+            <PageView
+              key={page.id}
+              pageId={page.id}
+              page={page}
+              deletePage={deletePage}
+              editPage={editPage}
+              updatePageSections={updatePageSections}
+            />
+          ))}
+        </AutoLayout>
       )}
+      <AutoLayout width="fill-parent" horizontalAlignItems="center" padding={12} cornerRadius={4} fill="#0000FF" hoverStyle={{ fill: "#1717d8" }} onClick={exportJson}>
+        <Text fontSize={14} fontWeight={600} fill="#ffffff">
+          Export JSON to Console
+        </Text>
+      </AutoLayout>
     </AutoLayout>
   );
 };
+
+ 

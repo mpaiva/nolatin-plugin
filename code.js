@@ -1,22 +1,30 @@
 const { widget } = figma;
 const { useSyncedState, useSyncedMap, usePropertyMenu, AutoLayout, Input, SVG, Frame, Text, } = widget;
 const Widget = () => {
-    const [pageIds, setPageIds] = useSyncedState("pageIds", []);
-    const pages = useSyncedMap("pages");
+    const [pages, setPages] = useSyncedState("pages", []);
     const addPage = () => {
         const pageId = randomId();
-        pages.set(pageId, { title: "Untitled Page", description: "" });
-        setPageIds([...pageIds, pageId]);
+        const newPage = {
+            id: pageId,
+            title: "Untitled Page",
+            description: "",
+            sections: [],
+        };
+        setPages([...pages, newPage]);
     };
     const deletePage = (pageId) => {
-        pages.delete(pageId);
-        setPageIds(pageIds.filter((id) => id !== pageId));
+        setPages(pages.filter(page => page.id !== pageId));
     };
     const editPage = (pageId, field, value) => {
-        const page = pages.get(pageId);
-        if (page) {
-            pages.set(pageId, Object.assign(Object.assign({}, page), { [field]: value }));
-        }
+        setPages(pages.map((page) => page.id === pageId ? Object.assign(Object.assign({}, page), { [field]: value }) : page));
+    };
+    const updatePageSections = (pageId, sections) => {
+        const updatedPages = pages.map(page => page.id === pageId ? Object.assign(Object.assign({}, page), { sections }) : page);
+        setPages(updatedPages);
+    };
+    const exportJson = () => {
+        const jsonContent = { json_content: { pages, editing: null } };
+        console.log(jsonContent);
     };
     usePropertyMenu([
         {
@@ -39,10 +47,13 @@ const Widget = () => {
             addPage();
         }
     });
-    return (figma.widget.h(AutoLayout, { direction: "vertical", verticalAlignItems: "center", horizontalAlignItems: "center" }, pageIds.length === 0 ? (figma.widget.h(AutoLayout, { width: 374, height: 194, padding: 16, fill: "#ffffff", cornerRadius: 8, verticalAlignItems: "center", horizontalAlignItems: "center" },
-        figma.widget.h(Text, { horizontalAlignText: "center", fontSize: 16, fill: "#555", width: "fill-parent" }, "Start by creating an intent framing page to host your priority guides."))) : (figma.widget.h(WidgetContainer, null,
-        figma.widget.h(AutoLayout, { direction: "horizontal", spacing: 16 }, pageIds.map((pageId) => (figma.widget.h(PageView, { key: pageId, pageId: pageId, page: pages.get(pageId), deletePage: deletePage, editPage: editPage }))))))));
+    return (figma.widget.h(AutoLayout, { direction: "vertical", verticalAlignItems: "center", horizontalAlignItems: "center" },
+        pages.length === 0 ? (figma.widget.h(AutoLayout, { width: 374, height: 194, padding: 16, fill: "#ffffff", cornerRadius: 8, verticalAlignItems: "center", horizontalAlignItems: "center" },
+            figma.widget.h(Text, { horizontalAlignText: "center", fontSize: 16, fill: "#555", width: "fill-parent" }, "Start by creating an intent framing page to host your priority guides."))) : (figma.widget.h(AutoLayout, { direction: "horizontal", spacing: 16 }, pages.map(page => (figma.widget.h(PageView, { key: page.id, pageId: page.id, page: page, deletePage: deletePage, editPage: editPage, updatePageSections: updatePageSections }))))),
+        figma.widget.h(AutoLayout, { width: "fill-parent", horizontalAlignItems: "center", padding: 12, cornerRadius: 4, fill: "#0000FF", hoverStyle: { fill: "#1717d8" }, onClick: exportJson },
+            figma.widget.h(Text, { fontSize: 14, fontWeight: 600, fill: "#ffffff" }, "Export JSON to Console"))));
 };
+// ContentView.tsx
 const ContentView = ({ content, deleteContent, cloneContent, editContent, moveUpContent, moveDownContent, canMoveUp, canMoveDown, }) => {
     const [isOpen, setIsOpen] = useSyncedState("openDropdown", null);
     const toggleDropdown = () => {
@@ -71,64 +82,74 @@ const ContentView = ({ content, deleteContent, cloneContent, editContent, moveUp
                 { label: 'Input Single Select List', value: 'InputRadioButtonList' },
                 { label: 'Input Multi Select List', value: 'InputCheckboxList' },
                 { label: 'Table', value: 'Table' },
-                { label: 'Responsive table', value: 'ListGroup' }
+                { label: 'Responsive table', value: 'ListGroup' },
             ], placeholder: "Content Type", isOpen: isOpen === content.id, onToggle: toggleDropdown }),
         (() => {
             switch (content.type) {
-                case 'Button':
-                    return (figma.widget.h(figma.widget.Fragment, null,
-                        figma.widget.h(Input, { value: content.descriptiveLabel || '', onTextEditEnd: (e) => editContent(content.id, 'descriptiveLabel', e.characters), placeholder: "Descriptive Label", fontSize: 16, width: "fill-parent" }),
-                        figma.widget.h(Input, { value: content.action || '', onTextEditEnd: (e) => editContent(content.id, 'action', e.characters), placeholder: "Action", fontSize: 16, width: "fill-parent" })));
                 case 'TextLink':
                     return (figma.widget.h(figma.widget.Fragment, null,
-                        figma.widget.h(Input, { value: content.descriptiveLabel || '', onTextEditEnd: (e) => editContent(content.id, 'descriptiveLabel', e.characters), placeholder: "Descriptive Link", fontSize: 16, width: "fill-parent" }),
-                        figma.widget.h(Input, { value: content.destinationURL || '', onTextEditEnd: (e) => editContent(content.id, 'destinationURL', e.characters), placeholder: "Destination URL", fontSize: 16, width: "fill-parent" })));
+                        figma.widget.h(Input, { value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters), placeholder: "Link Title", fontSize: 16, width: "fill-parent" }),
+                        figma.widget.h(Input, { value: content.url, onTextEditEnd: (e) => editContent(content.id, 'url', e.characters), placeholder: "Link URL", fontSize: 16, width: "fill-parent" })));
+                case 'Button':
+                    return (figma.widget.h(figma.widget.Fragment, null,
+                        figma.widget.h(Input, { value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters), placeholder: "Button Label", fontSize: 16, width: "fill-parent" }),
+                        figma.widget.h(Input, { value: content.url, onTextEditEnd: (e) => editContent(content.id, 'url', e.characters), placeholder: "Button URL", fontSize: 16, width: "fill-parent" })));
                 default:
-                    return null;
+                    return (figma.widget.h(figma.widget.Fragment, null,
+                        figma.widget.h(Input, { value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters), placeholder: "Content Title", fontSize: 16, width: "fill-parent" }),
+                        figma.widget.h(Input, { value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters), placeholder: "Content Description", fontSize: 16, width: "fill-parent" }),
+                        content.type === 'Image' && (figma.widget.h(Input, { value: content.url, onTextEditEnd: (e) => editContent(content.id, 'url', e.characters), placeholder: "Image URL", fontSize: 16, width: "fill-parent" }))));
             }
         })()));
 };
-const PageView = ({ pageId, page, deletePage, editPage }) => {
-    const sections = useSyncedMap(`sections-${pageId}`);
-    const [sectionOrder, setSectionOrder] = useSyncedState(`sectionOrder-${pageId}`, []);
+// PageView.tsx
+const PageView = ({ pageId, page, deletePage, editPage, updatePageSections }) => {
     const [openDropdown, setOpenDropdown] = useSyncedState("openDropdown", null);
     const addSection = () => {
         const sectionId = randomId();
-        sections.set(sectionId, { name: 'Untitled Section', description: '', type: 'Section' });
-        setSectionOrder([...sectionOrder, sectionId]); // Add new section to the end
+        const newSection = {
+            id: sectionId,
+            name: 'Untitled Section',
+            description: '',
+            element: 'Section',
+            children: [],
+            draft: false,
+        };
+        updatePageSections(pageId, [...page.sections, newSection]);
     };
     const deleteSection = (sectionId) => {
-        sections.delete(sectionId);
-        setSectionOrder(sectionOrder.filter(id => id !== sectionId)); // Remove section from order
+        updatePageSections(pageId, page.sections.filter(section => section.id !== sectionId));
     };
-    const cloneSection = (sectionId, section) => {
-        const clonedSectionId = randomId();
-        sections.set(clonedSectionId, Object.assign({}, section));
-        const index = sectionOrder.indexOf(sectionId);
-        const newOrder = [...sectionOrder];
-        newOrder.splice(index + 1, 0, clonedSectionId);
-        setSectionOrder(newOrder);
-    };
-    const editSection = (sectionId, field, value) => {
-        const section = sections.get(sectionId);
+    const cloneSection = (sectionId) => {
+        const section = page.sections.find(section => section.id === sectionId);
         if (section) {
-            sections.set(sectionId, Object.assign(Object.assign({}, section), { [field]: value }));
+            const clonedSectionId = randomId();
+            const clonedChildren = section.children.map(child => (Object.assign(Object.assign({}, child), { id: randomId(), children: [...child.children] })));
+            const clonedSection = Object.assign(Object.assign({}, section), { id: clonedSectionId, children: clonedChildren });
+            const index = page.sections.findIndex(section => section.id === sectionId);
+            const newSections = [...page.sections];
+            newSections.splice(index + 1, 0, clonedSection);
+            updatePageSections(pageId, newSections);
         }
     };
+    const editSection = (sectionId, field, value) => {
+        const updatedSections = page.sections.map(section => section.id === sectionId ? Object.assign(Object.assign({}, section), { [field]: value }) : section);
+        updatePageSections(pageId, updatedSections);
+    };
     const moveUpSection = (sectionId) => {
-        const index = sectionOrder.indexOf(sectionId);
+        const index = page.sections.findIndex(section => section.id === sectionId);
         if (index > 0) {
-            const newOrder = [...sectionOrder];
-            [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-            setSectionOrder(newOrder);
+            const newSections = [...page.sections];
+            [newSections[index - 1], newSections[index]] = [newSections[index], newSections[index - 1]];
+            updatePageSections(pageId, newSections);
         }
     };
     const moveDownSection = (sectionId) => {
-        const index = sectionOrder.indexOf(sectionId);
-        if (index < sectionOrder.length - 1) {
-            const newOrder = [...sectionOrder];
-            [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
-            setSectionOrder(newOrder);
+        const index = page.sections.findIndex(section => section.id === sectionId);
+        if (index < page.sections.length - 1) {
+            const newSections = [...page.sections];
+            [newSections[index + 1], newSections[index]] = [newSections[index], newSections[index + 1]];
+            updatePageSections(pageId, newSections);
         }
     };
     const toggleDropdown = (sectionId) => {
@@ -142,55 +163,59 @@ const PageView = ({ pageId, page, deletePage, editPage }) => {
             figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 8 },
                 figma.widget.h(Input, { value: page.title, onTextEditEnd: (e) => editPage(pageId, 'title', e.characters), placeholder: "Page Title", fontSize: 20, fontWeight: 700, width: "fill-parent" }),
                 figma.widget.h(Input, { value: page.description, onTextEditEnd: (e) => editPage(pageId, 'description', e.characters), placeholder: "Page Description", fontSize: 16, width: "fill-parent" })),
-            sectionOrder.length > 0 && (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 8 }, sectionOrder.map((sectionId, index) => {
-                const section = sections.get(sectionId);
-                if (!section)
-                    return null;
-                return (figma.widget.h(SectionView, { key: sectionId, sectionId: sectionId, section: section, deleteSection: deleteSection, cloneSection: cloneSection, editSection: editSection, moveUpSection: moveUpSection, moveDownSection: moveDownSection, isOpen: openDropdown === sectionId, toggleDropdown: () => toggleDropdown(sectionId), canMoveUp: index > 0, canMoveDown: index < sectionOrder.length - 1 }));
-            }))),
+            page.sections.length > 0 && (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 8 }, page.sections.map((section, index) => (figma.widget.h(SectionView, { key: section.id, sectionId: section.id, section: section, deleteSection: deleteSection, cloneSection: cloneSection, editSection: editSection, moveUpSection: moveUpSection, moveDownSection: moveDownSection, isOpen: openDropdown === section.id, toggleDropdown: () => toggleDropdown(section.id), canMoveUp: index > 0, canMoveDown: index < page.sections.length - 1 }))))),
             figma.widget.h(AutoLayout, { width: "fill-parent", horizontalAlignItems: "center", padding: 12, cornerRadius: 4, fill: "#0000FF", hoverStyle: { fill: "#1717d8" }, onClick: addSection },
                 figma.widget.h(Text, { fontSize: 16, fontWeight: 600, fill: "#ffffff" }, "Add Section")))));
 };
+// SectionView.tsx
 const SectionView = ({ sectionId, section, deleteSection, cloneSection, editSection, moveUpSection, moveDownSection, isOpen, toggleDropdown, canMoveUp, canMoveDown, }) => {
-    const contents = useSyncedMap(`contents-${sectionId}`);
-    const [contentOrder, setContentOrder] = useSyncedState(`contentOrder-${sectionId}`, []);
     const addContent = () => {
         const contentId = randomId();
-        contents.set(contentId, { id: contentId, type: 'Button' }); // Default to Button
-        setContentOrder([...contentOrder, contentId]);
+        const newContent = {
+            id: contentId,
+            type: 'Button',
+            title: '',
+            description: '',
+            url: '',
+            children: [],
+            draft: false,
+        };
+        const updatedContents = [...section.children, newContent];
+        editSection(sectionId, 'children', updatedContents);
     };
     const deleteContent = (contentId) => {
-        contents.delete(contentId);
-        setContentOrder(contentOrder.filter(id => id !== contentId));
+        const updatedContents = section.children.filter(content => content.id !== contentId);
+        editSection(sectionId, 'children', updatedContents);
     };
     const cloneContent = (contentId, content) => {
         const clonedContentId = randomId();
-        contents.set(clonedContentId, Object.assign(Object.assign({}, content), { id: clonedContentId }));
-        const index = contentOrder.indexOf(contentId);
-        const newOrder = [...contentOrder];
-        newOrder.splice(index + 1, 0, clonedContentId);
-        setContentOrder(newOrder);
+        const clonedContent = Object.assign(Object.assign({}, content), { id: clonedContentId, children: [...content.children] });
+        const index = section.children.findIndex(c => c.id === contentId);
+        const updatedContents = [
+            ...section.children.slice(0, index + 1),
+            clonedContent,
+            ...section.children.slice(index + 1)
+        ];
+        editSection(sectionId, 'children', updatedContents);
     };
     const editContent = (contentId, field, value) => {
-        const content = contents.get(contentId);
-        if (content) {
-            contents.set(contentId, Object.assign(Object.assign({}, content), { [field]: value }));
-        }
+        const updatedContents = section.children.map(content => content.id === contentId ? Object.assign(Object.assign({}, content), { [field]: value }) : content);
+        editSection(sectionId, 'children', updatedContents);
     };
     const moveUpContent = (contentId) => {
-        const index = contentOrder.indexOf(contentId);
+        const index = section.children.findIndex(c => c.id === contentId);
         if (index > 0) {
-            const newOrder = [...contentOrder];
-            [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-            setContentOrder(newOrder);
+            const updatedContents = [...section.children];
+            [updatedContents[index - 1], updatedContents[index]] = [updatedContents[index], updatedContents[index - 1]];
+            editSection(sectionId, 'children', updatedContents);
         }
     };
     const moveDownContent = (contentId) => {
-        const index = contentOrder.indexOf(contentId);
-        if (index < contentOrder.length - 1) {
-            const newOrder = [...contentOrder];
-            [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
-            setContentOrder(newOrder);
+        const index = section.children.findIndex(c => c.id === contentId);
+        if (index < section.children.length - 1) {
+            const updatedContents = [...section.children];
+            [updatedContents[index + 1], updatedContents[index]] = [updatedContents[index], updatedContents[index + 1]];
+            editSection(sectionId, 'children', updatedContents);
         }
     };
     return (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 12, padding: 8, fill: "#ffffff", cornerRadius: 4, stroke: "#ccc" },
@@ -201,23 +226,18 @@ const SectionView = ({ sectionId, section, deleteSection, cloneSection, editSect
             figma.widget.h(IconButton, { src: DeleteIconSvg, onClick: () => deleteSection(sectionId) })),
         figma.widget.h(Input, { value: section.name, onTextEditEnd: (e) => editSection(sectionId, 'name', e.characters), placeholder: "Section Name", fontSize: 18, fontWeight: 600, width: "fill-parent" }),
         figma.widget.h(Input, { value: section.description, onTextEditEnd: (e) => editSection(sectionId, 'description', e.characters), placeholder: "Section Description", fontSize: 16, width: "fill-parent" }),
-        figma.widget.h(Dropdown, { value: section.type, onChange: (value) => editSection(sectionId, 'type', value), options: [
+        figma.widget.h(Dropdown, { value: section.element, onChange: (value) => editSection(sectionId, 'element', value), options: [
                 { label: 'Section', value: 'Section' },
                 { label: 'Header', value: 'Header' },
                 { label: 'Form', value: 'Form' },
                 { label: 'Navigation', value: 'Navigation' },
                 { label: 'Search', value: 'Search' },
                 { label: 'Footer', value: 'Footer' },
-                { label: 'Complementry', value: 'Complementry' },
+                { label: 'Complementary', value: 'Complementary' },
                 { label: 'Alert', value: 'Alert' },
                 { label: 'Article', value: 'Article' },
             ], placeholder: "Section Type", isOpen: isOpen, onToggle: toggleDropdown }),
-        contentOrder.length > 0 && (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 8 }, contentOrder.map((contentId) => {
-            const content = contents.get(contentId);
-            if (!content)
-                return null; // Handle deleted contents gracefully
-            return (figma.widget.h(ContentView, { key: contentId, content: content, deleteContent: deleteContent, editContent: editContent, cloneContent: cloneContent, moveUpContent: moveUpContent, moveDownContent: moveDownContent, canMoveUp: contentOrder.indexOf(contentId) > 0, canMoveDown: contentOrder.indexOf(contentId) < contentOrder.length - 1 }));
-        }))),
+        section.children.length > 0 && (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 8 }, section.children.map((content, index) => (figma.widget.h(ContentView, { key: content.id, content: content, deleteContent: deleteContent, editContent: editContent, cloneContent: cloneContent, moveUpContent: moveUpContent, moveDownContent: moveDownContent, canMoveUp: index > 0, canMoveDown: index < section.children.length - 1 }))))),
         figma.widget.h(AutoLayout, { width: "fill-parent", horizontalAlignItems: "center", padding: 12, cornerRadius: 4, fill: "#0000FF", hoverStyle: { fill: "#1717d8" }, onClick: addContent },
             figma.widget.h(Text, { fontSize: 14, fontWeight: 600, fill: "#ffffff" }, "Add Content"))));
 };

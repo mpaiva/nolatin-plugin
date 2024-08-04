@@ -1,5 +1,8 @@
 interface Section {
+  id: string;
   name: string;
   description: string;
-  type: 'Section' | 'Header' | 'Form' | 'Navigation' | 'Search' | 'Footer' | 'Complementry' | 'Alert' | 'Article';
+  element: string;
+  children: Content[];  
+  draft: boolean;
 }
