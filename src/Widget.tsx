@@ -8,6 +8,7 @@ const {
   Input,
   SVG,
   Frame,
+  waitForTask,
   Text,
 } = widget;
 
@@ -44,7 +45,7 @@ const Widget = () => {
   };
 
   const exportJson = () => {
-    const jsonContent = { json_content: { pages, editing: null } };
+    const jsonContent = { pages, editing: null };
     console.log(jsonContent);
   };
 
@@ -76,12 +77,13 @@ const Widget = () => {
   return (
     <AutoLayout direction="vertical" verticalAlignItems="center" horizontalAlignItems="center">
       {pages.length === 0 ? (
-        <AutoLayout width={374} height={194} padding={16} fill="#ffffff" cornerRadius={8} verticalAlignItems="center" horizontalAlignItems="center">
+        <AutoLayout width={374} height={174} padding={16} fill="#ffffff" verticalAlignItems="center" horizontalAlignItems="center">
           <Text horizontalAlignText="center" fontSize={16} fill="#555" width="fill-parent">
             Start by creating an intent framing page to host your priority guides.
           </Text>
         </AutoLayout>
       ) : (
+        <WidgetContainer>
         <AutoLayout direction="horizontal" spacing={16}>
           {pages.map(page => (
             <PageView
@@ -94,8 +96,9 @@ const Widget = () => {
             />
           ))}
         </AutoLayout>
+        </WidgetContainer>
       )}
-      <AutoLayout width="fill-parent" horizontalAlignItems="center" padding={12} cornerRadius={4} fill="#0000FF" hoverStyle={{ fill: "#1717d8" }} onClick={exportJson}>
+      <AutoLayout width="fill-parent" horizontalAlignItems="center" padding={14} cornerRadius={4} fill="#0000FF" hoverStyle={{ fill: "#1717d8" }} onClick={exportJson}>
         <Text fontSize={14} fontWeight={600} fill="#ffffff">
           Export JSON to Console
         </Text>

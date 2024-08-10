@@ -11,7 +11,7 @@ const IconButton = ({ src, onClick }: IconButtonProps) => {
       onClick={onClick}
       cornerRadius={4}
       padding={4}
-      hoverStyle={{ fill: '#e0e0e0' }} 
+      hoverStyle={{ fill: '#EBEBF8' }} 
       verticalAlignItems="center"
       horizontalAlignItems="center"
       spacing={0}

@@ -7,8 +7,7 @@ const WidgetContainer = (props: WidgetContainerProps) => (
   <AutoLayout
     direction="vertical"
     verticalAlignItems="center"
-    cornerRadius={8}
-    fill="#f7f7f7"
+    fill="#F7F7F7"
     effect={[
       {
         type: "drop-shadow",
@@ -24,7 +23,7 @@ const WidgetContainer = (props: WidgetContainerProps) => (
       },
     ]}
   >
-    <AutoLayout spacing={16} padding={{ horizontal: 12, vertical: 12 }} direction="vertical">
+    <AutoLayout spacing={16} padding={12} direction="vertical">
       {props.children}
     </AutoLayout>
   </AutoLayout>

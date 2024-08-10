@@ -1,5 +1,4 @@
-// PageView.tsx
-
+ 
 interface PageViewProps {
   pageId: string;
   page: Page;
@@ -35,7 +34,7 @@ const PageView = ({ pageId, page, deletePage, editPage, updatePageSections }: Pa
       const clonedChildren = section.children.map(child => ({
         ...child,
         id: randomId(),
-        children: [...child.children], // Ensure deep clone for nested children
+        children: [...child.children],
       }));
       const clonedSection: Section = {
         ...section,
@@ -82,25 +81,30 @@ const PageView = ({ pageId, page, deletePage, editPage, updatePageSections }: Pa
     <AutoLayout width={350} direction="vertical" spacing={4} fill="#FFFFFF">
       <AutoLayout width="fill-parent" height={8} fill="#b2b2e5"></AutoLayout>
       <AutoLayout width="fill-parent" direction="vertical" spacing={16} padding={8}>
-        <AutoLayout width="fill-parent" horizontalAlignItems="end">
-          <IconButton src={DeleteIconSvg} onClick={() => deletePage(pageId)} />
-        </AutoLayout>
         <AutoLayout width="fill-parent" direction="vertical" spacing={8}>
-          <Input
-            value={page.title}
-            onTextEditEnd={(e) => editPage(pageId, 'title', e.characters)}
-            placeholder="Page Title"
-            fontSize={20}
-            fontWeight={700}
-            width="fill-parent"
-          />
-          <Input
-            value={page.description}
-            onTextEditEnd={(e) => editPage(pageId, 'description', e.characters)}
-            placeholder="Page Description"
-            fontSize={16}
-            width="fill-parent"
-          />
+          <AutoLayout width="fill-parent" verticalAlignItems="center" direction="horizontal" spacing={8}>
+            <Input
+              value={page.title}
+              onTextEditEnd={(e) => editPage(pageId, 'title', e.characters)}
+              placeholder="Page Title"
+              fontSize={20}
+              fontWeight={700}
+              width="fill-parent"
+            />
+            <AutoLayout horizontalAlignItems="end">
+              <IconButton src={DeleteIconSvg} onClick={() => deletePage(pageId)} />
+            </AutoLayout>
+          </AutoLayout>
+          <AutoLayout width="fill-parent" direction="horizontal" padding={{ bottom: 8 }}>
+            <Input
+              value={page.description}
+              onTextEditEnd={(e) => editPage(pageId, 'description', e.characters)}
+              placeholder="Page Description"
+              fontSize={16}
+              fontWeight={500}
+              width="fill-parent"
+            />
+          </AutoLayout>
         </AutoLayout>
         {page.sections.length > 0 && (
           <AutoLayout width="fill-parent" direction="vertical" spacing={8}>
@@ -122,10 +126,18 @@ const PageView = ({ pageId, page, deletePage, editPage, updatePageSections }: Pa
             ))}
           </AutoLayout>
         )}
-        <AutoLayout width="fill-parent" horizontalAlignItems="center" padding={12} cornerRadius={4} fill="#0000FF" hoverStyle={{ fill: "#1717d8" }} onClick={addSection}>
-          <Text fontSize={16} fontWeight={600} fill="#ffffff">
-            Add Section
-          </Text>
+        <AutoLayout 
+            width="fill-parent" 
+            horizontalAlignItems="center" 
+            padding={12} 
+            stroke="#0000FF" 
+            strokeWidth={2}
+            cornerRadius={4} 
+            fill="#FFFFFF" 
+            onClick={addSection}>
+            <Text fontSize={16} fontWeight={600} fill="#0000FF">
+              Add Section
+            </Text>
         </AutoLayout>
       </AutoLayout>
     </AutoLayout>

@@ -1,5 +1,4 @@
-// SectionView.tsx
-
+ 
 interface SectionViewProps {
   sectionId: string;
   section: Section;
@@ -31,7 +30,7 @@ const SectionView = ({
     const contentId = randomId();
     const newContent: Content = {
       id: contentId,
-      type: 'Button',
+      type: 'Section Title with description',  // Default type
       title: '',
       description: '',
       url: '',
@@ -59,12 +58,36 @@ const SectionView = ({
     editSection(sectionId, 'children', updatedContents);
   };
 
-  const editContent = (contentId: string, field: keyof Content, value: string) => {
-    const updatedContents = section.children.map(content =>
-      content.id === contentId ? { ...content, [field]: value } : content
-    );
-    editSection(sectionId, 'children', updatedContents);
+ 
+  const editContent = (contentId: string, field: keyof Content, value: string | Content[]) => {
+    const updateContent = (content: Content): Content => {
+      if (content.id === contentId) {
+        if (field === 'type') {
+          return { 
+            ...content, 
+            type: value as ContentType, 
+            title: '', 
+            description: '', 
+            url: '', 
+            children: [] // Reset children when type changes
+          };
+        } else {
+          return { ...content, [field]: value };
+        }
+      } else if (content.children.length > 0) {
+        return { 
+          ...content, 
+          children: content.children.map(child => updateContent(child)) 
+        };
+      }
+      return content;
+    };
+  
+    const updatedSections = section.children.map(updateContent);
+    editSection(sectionId, 'children', updatedSections);
   };
+  
+
 
   const moveUpContent = (contentId: string) => {
     const index = section.children.findIndex(c => c.id === contentId);
@@ -85,50 +108,46 @@ const SectionView = ({
   };
 
   return (
-    <AutoLayout width="fill-parent" direction="vertical" spacing={12} padding={8} fill="#ffffff" cornerRadius={4} stroke="#ccc">
-      <AutoLayout width="fill-parent" horizontalAlignItems="end" spacing={4}>
-        {canMoveUp && (
-          <IconButton src={MoveUpIconSvg} onClick={() => moveUpSection(sectionId)} />
-        )}
-        {canMoveDown && (
-          <IconButton src={MoveDownIconSvg} onClick={() => moveDownSection(sectionId)} />
-        )}
-        <IconButton src={CloneIconSvg} onClick={() => cloneSection(sectionId, section)} />
-        <IconButton src={DeleteIconSvg} onClick={() => deleteSection(sectionId)} />
+    <AutoLayout width="fill-parent" direction="vertical" spacing={12} padding={8} fill="#F8F8F8" stroke="#0000FF66" strokeDashPattern={[4, 4]} strokeWidth={2} cornerRadius={4}>
+      <AutoLayout width="fill-parent" direction="horizontal" spacing={8}>
+        <AutoLayout width="fill-parent" padding={{ vertical: 4}}>
+          <Dropdown
+            value={section.element}
+            onChange={(value) => editSection(sectionId, 'element', value)}
+            options={sectionOptions}
+            placeholder="Section Type"
+            isOpen={isOpen}
+            onToggle={toggleDropdown}
+          />
+        </AutoLayout>
+        <AutoLayout horizontalAlignItems="end" spacing={4}>
+          {canMoveUp && (
+            <IconButton src={MoveUpIconSvg} onClick={() => moveUpSection(sectionId)} />
+          )}
+          {canMoveDown && (
+            <IconButton src={MoveDownIconSvg} onClick={() => moveDownSection(sectionId)} />
+          )}
+          <IconButton src={CloneIconSvg} onClick={() => cloneSection(sectionId, section)} />
+          <IconButton src={DeleteIconSvg} onClick={() => deleteSection(sectionId)} />
+        </AutoLayout>
+      </AutoLayout> 
+      <AutoLayout width="fill-parent" fill="#0000FF0D" direction="vertical" spacing={8} padding={8}>
+        <Input
+          value={section.name}
+          onTextEditEnd={(e) => editSection(sectionId, 'name', e.characters)}
+          placeholder="Section Name"
+          fontSize={18}
+          fontWeight={600}
+          width="fill-parent"
+        />
+        <Input
+          value={section.description}
+          onTextEditEnd={(e) => editSection(sectionId, 'description', e.characters)}
+          placeholder="Section Description"
+          fontSize={16}
+          width="fill-parent"
+        />
       </AutoLayout>
-      <Input
-        value={section.name}
-        onTextEditEnd={(e) => editSection(sectionId, 'name', e.characters)}
-        placeholder="Section Name"
-        fontSize={18}
-        fontWeight={600}
-        width="fill-parent"
-      />
-      <Input
-        value={section.description}
-        onTextEditEnd={(e) => editSection(sectionId, 'description', e.characters)}
-        placeholder="Section Description"
-        fontSize={16}
-        width="fill-parent"
-      />
-      <Dropdown
-        value={section.element}
-        onChange={(value) => editSection(sectionId, 'element', value)}
-        options={[
-          { label: 'Section', value: 'Section' },
-          { label: 'Header', value: 'Header' },
-          { label: 'Form', value: 'Form' },
-          { label: 'Navigation', value: 'Navigation' },
-          { label: 'Search', value: 'Search' },
-          { label: 'Footer', value: 'Footer' },
-          { label: 'Complementary', value: 'Complementary' },
-          { label: 'Alert', value: 'Alert' },
-          { label: 'Article', value: 'Article' },
-        ]}
-        placeholder="Section Type"
-        isOpen={isOpen}
-        onToggle={toggleDropdown}
-      />
       {section.children.length > 0 && (
         <AutoLayout width="fill-parent" direction="vertical" spacing={8}>
           {section.children.map((content, index) => (

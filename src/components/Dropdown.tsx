@@ -16,15 +16,40 @@ const Dropdown = ({ options, value, onChange, placeholder, isOpen, onToggle }: D
 
   return (
     <AutoLayout direction="vertical" width="fill-parent" spacing={8}>
-      <Text
-        onClick={onToggle}
-        fill={value ? "#000" : "#aaa"}
-        fontSize={16}
-      >
-        {displayValue || placeholder}
-      </Text>
+      <AutoLayout direction="vertical" padding={{ vertical: 2, horizontal: 8 }} cornerRadius={4} spacing={8} fill="#0000FF">
+        <Text
+          onClick={onToggle}
+          fill={value ? "#FFFFFF" : "#FFFFFF"}
+          fontSize={16}
+          fontWeight={600}
+        >
+          {displayValue || placeholder}
+        </Text>
+      </AutoLayout>
       {isOpen && (
-        <AutoLayout width="fill-parent" direction="vertical" fill="#fff" stroke="#ccc" cornerRadius={4} padding={8}>
+        <AutoLayout 
+          y={24} 
+          width={"fill-parent"} 
+          direction="vertical" 
+          fill="#fff" 
+          stroke="#000" 
+          cornerRadius={8} 
+          padding={{ horizontal: 16, vertical: 8 }}
+          effect={[
+            {
+              type: "drop-shadow",
+              blur: 5,
+              color: { r: 0, g: 0, b: 0, a: 0.1 },
+              offset: { x: 0, y: 3 },
+            },
+            {
+              type: "drop-shadow",
+              blur: 2,
+              color: { r: 0, g: 0, b: 0, a: 0.15 },
+              offset: { x: 0, y: 0 },
+            }
+          ]}
+          >
           {options.map((option) => (
             <AutoLayout
               key={option.value}
