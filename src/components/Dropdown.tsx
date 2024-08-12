@@ -33,7 +33,7 @@ const Dropdown = ({ options, value, onChange, placeholder, isOpen, onToggle }: D
           direction="vertical" 
           fill="#fff" 
           stroke="#000" 
-          cornerRadius={8} 
+          cornerRadius={4} 
           padding={{ horizontal: 16, vertical: 8 }}
           effect={[
             {

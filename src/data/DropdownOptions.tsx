@@ -25,3 +25,15 @@ const contentOptions = [
   { label: 'Heading Text', value: 'Heading text' },
   { label: 'Heading Link', value: 'Heading link' },
 ];
+
+const inputOptions = [
+  { label: 'Text', value: 'text' },
+  { label: 'Password', value: 'password' },
+  { label: 'Number', value: 'number' },
+  { label: 'Date', value: 'date' },
+  { label: 'Date and Time', value: 'date and time' },
+  { label: 'Email', value: 'email' },
+  { label: 'Telephone', value: 'telephone' },
+  { label: 'Slider Range', value: 'slider range' },
+  { label: 'Upload File', value: 'upload file' },
+];

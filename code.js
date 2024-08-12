@@ -50,7 +50,7 @@ const Widget = () => {
     return (figma.widget.h(AutoLayout, { direction: "vertical", verticalAlignItems: "center", horizontalAlignItems: "center" },
         pages.length === 0 ? (figma.widget.h(AutoLayout, { width: 374, height: 174, padding: 16, fill: "#ffffff", verticalAlignItems: "center", horizontalAlignItems: "center" },
             figma.widget.h(Text, { horizontalAlignText: "center", fontSize: 16, fill: "#555", width: "fill-parent" }, "Start by creating an intent framing page to host your priority guides."))) : (figma.widget.h(WidgetContainer, null,
-            figma.widget.h(AutoLayout, { direction: "horizontal", spacing: 16 }, pages.map(page => (figma.widget.h(PageView, { key: page.id, pageId: page.id, page: page, deletePage: deletePage, editPage: editPage, updatePageSections: updatePageSections })))))),
+            figma.widget.h(AutoLayout, { direction: "horizontal", spacing: 16 }, pages.map(page => (figma.widget.h(PageView, { key: page.id, pageId: page.id, page: page, deletePage: deletePage, editPage: editPage, updatePageSections: updatePageSections, pages: pages })))))),
         figma.widget.h(AutoLayout, { width: "fill-parent", horizontalAlignItems: "center", padding: 14, cornerRadius: 4, fill: "#0000FF", hoverStyle: { fill: "#1717d8" }, onClick: exportJson },
             figma.widget.h(Text, { fontSize: 14, fontWeight: 600, fill: "#ffffff" }, "Export JSON to Console"))));
 };
@@ -60,7 +60,7 @@ const Dropdown = ({ options, value, onChange, placeholder, isOpen, onToggle }) =
     return (figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent", spacing: 8 },
         figma.widget.h(AutoLayout, { direction: "vertical", padding: { vertical: 2, horizontal: 8 }, cornerRadius: 4, spacing: 8, fill: "#0000FF" },
             figma.widget.h(Text, { onClick: onToggle, fill: value ? "#FFFFFF" : "#FFFFFF", fontSize: 16, fontWeight: 600 }, displayValue || placeholder)),
-        isOpen && (figma.widget.h(AutoLayout, { y: 24, width: "fill-parent", direction: "vertical", fill: "#fff", stroke: "#000", cornerRadius: 8, padding: { horizontal: 16, vertical: 8 }, effect: [
+        isOpen && (figma.widget.h(AutoLayout, { y: 24, width: "fill-parent", direction: "vertical", fill: "#fff", stroke: "#000", cornerRadius: 4, padding: { horizontal: 16, vertical: 8 }, effect: [
                 {
                     type: "drop-shadow",
                     blur: 5,
@@ -82,6 +82,39 @@ const Dropdown = ({ options, value, onChange, placeholder, isOpen, onToggle }) =
 const IconButton = ({ src, onClick }) => {
     return (figma.widget.h(AutoLayout, { onClick: onClick, cornerRadius: 4, padding: 4, hoverStyle: { fill: '#EBEBF8' }, verticalAlignItems: "center", horizontalAlignItems: "center", spacing: 0 },
         figma.widget.h(SVG, { src: src, width: 20, height: 20 })));
+};
+const LabeledComboBox = ({ label, options, value, onChange, placeholder, isOpen, onToggle }) => {
+    const selectedOption = options.find(option => option.value === value);
+    const displayValue = selectedOption ? selectedOption.label : value || placeholder;
+    return (figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent", spacing: 4 },
+        figma.widget.h(Text, { fontSize: 16, fontWeight: 500, width: "fill-parent" }, label),
+        figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent", spacing: 8 },
+            figma.widget.h(AutoLayout, { verticalAlignItems: "center", cornerRadius: 4, fill: "#FFF", width: "fill-parent", padding: 8, strokeWidth: 1, stroke: "#000" },
+                figma.widget.h(Input, { value: displayValue, onTextEditEnd: (e) => {
+                        const newValue = e.characters.trim();
+                        if (newValue) {
+                            onChange(newValue);
+                        }
+                    }, placeholder: placeholder, fontSize: 16, fontWeight: 500, width: "fill-parent" }),
+                figma.widget.h(SVG, { src: ArrowDownSvg, onClick: onToggle })),
+            isOpen && (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", fill: "#fff", stroke: "#000", cornerRadius: 4, padding: { horizontal: 16, vertical: 8 }, effect: [
+                    {
+                        type: "drop-shadow",
+                        blur: 5,
+                        color: { r: 0, g: 0, b: 0, a: 0.1 },
+                        offset: { x: 0, y: 3 },
+                    },
+                    {
+                        type: "drop-shadow",
+                        blur: 2,
+                        color: { r: 0, g: 0, b: 0, a: 0.15 },
+                        offset: { x: 0, y: 0 },
+                    }
+                ] }, options.map((option) => (figma.widget.h(AutoLayout, { key: option.value, width: "fill-parent", onClick: () => {
+                    onChange(option.value);
+                    onToggle();
+                }, padding: { vertical: 4 } },
+                figma.widget.h(Text, { fontSize: 16 }, option.label)))))))));
 };
 const LabeledInput = ({ label, value, onTextEditEnd, placeholder }) => {
     return (figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent", spacing: 4 },
@@ -111,7 +144,7 @@ const LabeledSelect = ({ label, options, value, onChange, placeholder, isOpen, o
             figma.widget.h(AutoLayout, { onClick: onToggle, verticalAlignItems: "center", cornerRadius: 4, fill: "#FFF", width: "fill-parent", padding: 8, strokeWidth: 1, stroke: "#000" },
                 figma.widget.h(Text, { fill: "#000000", width: "fill-parent", fontSize: 16, fontWeight: 500 }, displayValue || placeholder),
                 figma.widget.h(SVG, { src: ArrowDownSvg })),
-            isOpen && (figma.widget.h(AutoLayout, { y: 24, width: "fill-parent", direction: "vertical", fill: "#fff", stroke: "#000", cornerRadius: 8, padding: { horizontal: 16, vertical: 8 }, effect: [
+            isOpen && (figma.widget.h(AutoLayout, { y: 24, width: "fill-parent", direction: "vertical", fill: "#fff", stroke: "#000", cornerRadius: 4, padding: { horizontal: 16, vertical: 8 }, effect: [
                     {
                         type: "drop-shadow",
                         blur: 5,
@@ -153,36 +186,52 @@ const BulletListTextContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
         figma.widget.h(LabeledInput, { label: 'List Items: Wrap each item in double quotes ("item 1", "item2")', value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
-const ButtonContent = ({ content, editContent }) => {
+const ButtonContent = ({ content, editContent, pages }) => {
+    const pageOptions = pages.map(page => ({
+        label: page.title,
+        value: page.id
+    }));
+    const [isOpen, setIsOpen] = useSyncedState("comboBoxDropdownOpen", null);
+    const toggleDropdown = () => {
+        setIsOpen(isOpen === content.id ? null : content.id);
+    };
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: "Button Label", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
-        figma.widget.h(LabeledInput, { label: "Button URL", value: content.url, onTextEditEnd: (e) => editContent(content.id, 'url', e.characters) })));
+        figma.widget.h(LabeledInput, { label: "Label:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
+        figma.widget.h(LabeledComboBox, { label: "Action:", options: pageOptions, value: content.url, onChange: (value) => editContent(content.id, 'url', value), placeholder: "Select page or enter link", isOpen: isOpen === content.id, onToggle: toggleDropdown })));
 };
 const DefaultContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
         figma.widget.h(LabeledInput, { label: "Title", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
         figma.widget.h(LabeledInput, { label: "Description", value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
-const HeadingLinkContent = ({ content, editContent }) => {
+const HeadingLinkContent = ({ content, editContent, pages }) => {
+    const pageOptions = pages.map(page => ({
+        label: page.title,
+        value: page.id
+    }));
+    const [isOpen, setIsOpen] = useSyncedState("comboBoxDropdownOpen", null);
+    const toggleDropdown = () => {
+        setIsOpen(isOpen === content.id ? null : content.id);
+    };
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: "Heading Title", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
-        figma.widget.h(LabeledInput, { label: "Heading Description", value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) }),
-        figma.widget.h(LabeledInput, { label: "Heading URL", value: content.url, onTextEditEnd: (e) => editContent(content.id, 'url', e.characters) })));
+        figma.widget.h(LabeledInput, { label: "Title:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
+        figma.widget.h(LabeledInput, { label: "Description:", value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) }),
+        figma.widget.h(LabeledComboBox, { label: "Action:", options: pageOptions, value: content.url, onChange: (value) => editContent(content.id, 'url', value), placeholder: "Select page or enter link", isOpen: isOpen === content.id, onToggle: toggleDropdown })));
 };
 const HeadingTextContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: "Heading Title", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
-        figma.widget.h(LabeledInput, { label: "Heading Description", value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
+        figma.widget.h(LabeledInput, { label: "Title:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
+        figma.widget.h(LabeledInput, { label: "Description:", value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
 const ImageContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: "Image Description", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
-        figma.widget.h(LabeledInput, { label: "Image URL", value: content.url, onTextEditEnd: (e) => editContent(content.id, 'url', e.characters) }),
-        figma.widget.h(LabeledInput, { label: "Image Caption", value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
+        figma.widget.h(LabeledInput, { label: "Source (URL):", value: content.url, onTextEditEnd: (e) => editContent(content.id, 'url', e.characters) }),
+        figma.widget.h(LabeledInput, { label: "Alternative text:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
+        figma.widget.h(LabeledInput, { label: "Captions:", value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
 const InputSelectContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: "Input Label", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
+        figma.widget.h(LabeledInput, { label: "Label:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
         figma.widget.h(LabeledInput, { label: 'Options: Wrap each item in double quotes (example: "option1", "option2")', value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
 // InputTextContent.tsx
@@ -191,20 +240,9 @@ const InputTextContent = ({ content, editContent }) => {
     const toggleDropdown = () => {
         setIsOpen(isOpen === content.id ? null : content.id);
     };
-    const inputOptions = [
-        { label: 'Text', value: 'text' },
-        { label: 'Password', value: 'password' },
-        { label: 'Number', value: 'number' },
-        { label: 'Date', value: 'date' },
-        { label: 'Date and Time', value: 'date and time' },
-        { label: 'Email', value: 'email' },
-        { label: 'Telephone', value: 'telephone' },
-        { label: 'Slider Range', value: 'slider range' },
-        { label: 'Upload File', value: 'upload file' },
-    ];
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: "Input Label", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
-        figma.widget.h(LabeledSelect, { label: "Input Type", options: inputOptions, value: content.url || 'text', onChange: (value) => editContent(content.id, 'url', value), placeholder: "Select Type", isOpen: isOpen === content.id, onToggle: toggleDropdown })));
+        figma.widget.h(LabeledSelect, { label: "Type:", options: inputOptions, value: content.url || 'text', onChange: (value) => editContent(content.id, 'url', value), placeholder: "Select Type", isOpen: isOpen === content.id, onToggle: toggleDropdown }),
+        figma.widget.h(LabeledInput, { label: "Label:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) })));
 };
 const NumberListLinksContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
@@ -214,7 +252,7 @@ const NumberListTextContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
         figma.widget.h(LabeledInput, { label: 'List Items: Wrap each item in double quotes ("item 1", "item2")', value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
-const SubSectionContent = ({ content, editContent }) => {
+const SubSectionContent = ({ content, editContent, pages }) => {
     const addContent = () => {
         const contentId = randomId();
         const newContent = {
@@ -261,18 +299,26 @@ const SubSectionContent = ({ content, editContent }) => {
                     [updatedChildren[index + 1], updatedChildren[index]] = [updatedChildren[index], updatedChildren[index + 1]];
                     editContent(content.id, 'children', updatedChildren);
                 }
-            }, canMoveUp: index > 0, canMoveDown: index < content.children.length - 1 }))))),
+            }, canMoveUp: index > 0, canMoveDown: index < content.children.length - 1, pages: pages }))))),
         figma.widget.h(AutoLayout, { width: "fill-parent", horizontalAlignItems: "center", padding: 12, cornerRadius: 4, fill: "#0000FF", hoverStyle: { fill: "#1717d8" }, onClick: addContent },
             figma.widget.h(Text, { fontSize: 14, fontWeight: 600, fill: "#ffffff" }, "Add Content"))));
 };
-const TextLinkContent = ({ content, editContent }) => {
+const TextLinkContent = ({ content, editContent, pages }) => {
+    const pageOptions = pages.map(page => ({
+        label: page.title,
+        value: page.id
+    }));
+    const [isOpen, setIsOpen] = useSyncedState("comboBoxDropdownOpen", null);
+    const toggleDropdown = () => {
+        setIsOpen(isOpen === content.id ? null : content.id);
+    };
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: "Link Title", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
-        figma.widget.h(LabeledInput, { label: "Link URL", value: content.url, onTextEditEnd: (e) => editContent(content.id, 'url', e.characters) })));
+        figma.widget.h(LabeledInput, { label: "Title", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
+        figma.widget.h(LabeledComboBox, { label: "Action:", options: pageOptions, value: content.url, onChange: (value) => editContent(content.id, 'url', value), placeholder: "Select page or enter link", isOpen: isOpen === content.id, onToggle: toggleDropdown })));
 };
 const TextParagraphContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: "Paragraph Text", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) })));
+        figma.widget.h(LabeledInput, { label: "Paragraph:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) })));
 };
 const sectionOptions = [
     { label: 'Section', value: 'Section' },
@@ -300,6 +346,17 @@ const contentOptions = [
     { label: 'Heading Text', value: 'Heading text' },
     { label: 'Heading Link', value: 'Heading link' },
 ];
+const inputOptions = [
+    { label: 'Text', value: 'text' },
+    { label: 'Password', value: 'password' },
+    { label: 'Number', value: 'number' },
+    { label: 'Date', value: 'date' },
+    { label: 'Date and Time', value: 'date and time' },
+    { label: 'Email', value: 'email' },
+    { label: 'Telephone', value: 'telephone' },
+    { label: 'Slider Range', value: 'slider range' },
+    { label: 'Upload File', value: 'upload file' },
+];
 const AddIconLightSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
 const ArrowDownSvg = `<svg width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M13.0002 1.58337L7.16683 7.41671L1.3335 1.58337" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -321,7 +378,7 @@ const randomId = () => Math.random().toString(36).substring(2, 15);
 const deepClone = (obj) => {
     return JSON.parse(JSON.stringify(obj));
 };
-const ContentView = ({ content, deleteContent, cloneContent, editContent, moveUpContent, moveDownContent, canMoveUp, canMoveDown, }) => {
+const ContentView = ({ content, deleteContent, cloneContent, editContent, moveUpContent, moveDownContent, canMoveUp, canMoveDown, pages }) => {
     const [contentDropdownOpen, setContentDropdownOpen] = useSyncedState("contentDropdownOpen", null);
     const toggleContentDropdown = () => {
         setContentDropdownOpen(contentDropdownOpen === content.id ? null : content.id);
@@ -329,7 +386,7 @@ const ContentView = ({ content, deleteContent, cloneContent, editContent, moveUp
     const handleContentTypeChange = (newValue) => {
         editContent(content.id, 'type', newValue);
     };
-    return (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 12, padding: 8, fill: "#f8f8f8", cornerRadius: 4, stroke: "#ddd" },
+    return (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 12, padding: 8, fill: "#F8F8F8", cornerRadius: 4, stroke: "#A1A1A1" },
         figma.widget.h(AutoLayout, { width: "fill-parent", direction: "horizontal", spacing: 8 },
             figma.widget.h(AutoLayout, { width: "fill-parent", padding: { vertical: 4 } },
                 figma.widget.h(Dropdown, { value: content.type, onChange: handleContentTypeChange, options: contentOptions, placeholder: "Content Type", isOpen: contentDropdownOpen === content.id, onToggle: toggleContentDropdown })),
@@ -338,9 +395,9 @@ const ContentView = ({ content, deleteContent, cloneContent, editContent, moveUp
                 canMoveDown && figma.widget.h(IconButton, { src: MoveDownIconSvg, onClick: () => moveDownContent(content.id) }),
                 figma.widget.h(IconButton, { src: CloneIconSvg, onClick: () => cloneContent(content.id, content) }),
                 figma.widget.h(IconButton, { src: DeleteIconSvg, onClick: () => deleteContent(content.id) }))),
-        content.type === 'Section Title with description' ? (figma.widget.h(SubSectionContent, { content: content, editContent: editContent })) : content.type === 'Button' ? (figma.widget.h(ButtonContent, { content: content, editContent: editContent })) : content.type === 'Text link' ? (figma.widget.h(TextLinkContent, { content: content, editContent: editContent })) : content.type === 'Input field' ? (figma.widget.h(InputTextContent, { content: content, editContent: editContent })) : content.type === 'Select field' ? (figma.widget.h(InputSelectContent, { content: content, editContent: editContent })) : content.type === 'Image with description' ? (figma.widget.h(ImageContent, { content: content, editContent: editContent })) : content.type === 'Bulleted list of text' ? (figma.widget.h(BulletListTextContent, { content: content, editContent: editContent })) : content.type === 'Bulleted list of links' ? (figma.widget.h(BulletListLinksContent, { content: content, editContent: editContent })) : content.type === 'Numbered list of text' ? (figma.widget.h(NumberListTextContent, { content: content, editContent: editContent })) : content.type === 'Numbered list of links' ? (figma.widget.h(NumberListLinksContent, { content: content, editContent: editContent })) : content.type === 'Text paragraph' ? (figma.widget.h(TextParagraphContent, { content: content, editContent: editContent })) : content.type === 'Heading text' ? (figma.widget.h(HeadingTextContent, { content: content, editContent: editContent })) : content.type === 'Heading link' ? (figma.widget.h(HeadingLinkContent, { content: content, editContent: editContent })) : (figma.widget.h(DefaultContent, { content: content, editContent: editContent }))));
+        content.type === 'Section Title with description' ? (figma.widget.h(SubSectionContent, { content: content, editContent: editContent, pages: pages })) : content.type === 'Button' ? (figma.widget.h(ButtonContent, { content: content, editContent: editContent, pages: pages })) : content.type === 'Text link' ? (figma.widget.h(TextLinkContent, { content: content, editContent: editContent, pages: pages })) : content.type === 'Input field' ? (figma.widget.h(InputTextContent, { content: content, editContent: editContent })) : content.type === 'Select field' ? (figma.widget.h(InputSelectContent, { content: content, editContent: editContent })) : content.type === 'Image with description' ? (figma.widget.h(ImageContent, { content: content, editContent: editContent })) : content.type === 'Bulleted list of text' ? (figma.widget.h(BulletListTextContent, { content: content, editContent: editContent })) : content.type === 'Bulleted list of links' ? (figma.widget.h(BulletListLinksContent, { content: content, editContent: editContent })) : content.type === 'Numbered list of text' ? (figma.widget.h(NumberListTextContent, { content: content, editContent: editContent })) : content.type === 'Numbered list of links' ? (figma.widget.h(NumberListLinksContent, { content: content, editContent: editContent })) : content.type === 'Text paragraph' ? (figma.widget.h(TextParagraphContent, { content: content, editContent: editContent })) : content.type === 'Heading text' ? (figma.widget.h(HeadingTextContent, { content: content, editContent: editContent })) : content.type === 'Heading link' ? (figma.widget.h(HeadingLinkContent, { content: content, editContent: editContent, pages: pages })) : (figma.widget.h(DefaultContent, { content: content, editContent: editContent }))));
 };
-const PageView = ({ pageId, page, deletePage, editPage, updatePageSections }) => {
+const PageView = ({ pageId, page, deletePage, editPage, updatePageSections, pages }) => {
     const [openDropdown, setOpenDropdown] = useSyncedState("openDropdown", null);
     const addSection = () => {
         const sectionId = randomId();
@@ -402,11 +459,11 @@ const PageView = ({ pageId, page, deletePage, editPage, updatePageSections }) =>
                         figma.widget.h(IconButton, { src: DeleteIconSvg, onClick: () => deletePage(pageId) }))),
                 figma.widget.h(AutoLayout, { width: "fill-parent", direction: "horizontal", padding: { bottom: 8 } },
                     figma.widget.h(Input, { value: page.description, onTextEditEnd: (e) => editPage(pageId, 'description', e.characters), placeholder: "Page Description", fontSize: 16, fontWeight: 500, width: "fill-parent" }))),
-            page.sections.length > 0 && (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 8 }, page.sections.map((section, index) => (figma.widget.h(SectionView, { key: section.id, sectionId: section.id, section: section, deleteSection: deleteSection, cloneSection: cloneSection, editSection: editSection, moveUpSection: moveUpSection, moveDownSection: moveDownSection, isOpen: openDropdown === section.id, toggleDropdown: () => toggleDropdown(section.id), canMoveUp: index > 0, canMoveDown: index < page.sections.length - 1 }))))),
+            page.sections.length > 0 && (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 8 }, page.sections.map((section, index) => (figma.widget.h(SectionView, { key: section.id, sectionId: section.id, section: section, deleteSection: deleteSection, cloneSection: cloneSection, editSection: editSection, moveUpSection: moveUpSection, moveDownSection: moveDownSection, isOpen: openDropdown === section.id, toggleDropdown: () => toggleDropdown(section.id), canMoveUp: index > 0, canMoveDown: index < page.sections.length - 1, pages: pages }))))),
             figma.widget.h(AutoLayout, { width: "fill-parent", horizontalAlignItems: "center", padding: 12, stroke: "#0000FF", strokeWidth: 2, cornerRadius: 4, fill: "#FFFFFF", onClick: addSection },
                 figma.widget.h(Text, { fontSize: 16, fontWeight: 600, fill: "#0000FF" }, "Add Section")))));
 };
-const SectionView = ({ sectionId, section, deleteSection, cloneSection, editSection, moveUpSection, moveDownSection, isOpen, toggleDropdown, canMoveUp, canMoveDown, }) => {
+const SectionView = ({ sectionId, section, deleteSection, cloneSection, editSection, moveUpSection, moveDownSection, isOpen, toggleDropdown, canMoveUp, canMoveDown, pages }) => {
     const addContent = () => {
         const contentId = randomId();
         const newContent = {
@@ -483,7 +540,7 @@ const SectionView = ({ sectionId, section, deleteSection, cloneSection, editSect
         figma.widget.h(AutoLayout, { width: "fill-parent", fill: "#0000FF0D", direction: "vertical", spacing: 8, padding: 8 },
             figma.widget.h(Input, { value: section.name, onTextEditEnd: (e) => editSection(sectionId, 'name', e.characters), placeholder: "Section Name", fontSize: 18, fontWeight: 600, width: "fill-parent" }),
             figma.widget.h(Input, { value: section.description, onTextEditEnd: (e) => editSection(sectionId, 'description', e.characters), placeholder: "Section Description", fontSize: 16, width: "fill-parent" })),
-        section.children.length > 0 && (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 8 }, section.children.map((content, index) => (figma.widget.h(ContentView, { key: content.id, content: content, deleteContent: deleteContent, editContent: editContent, cloneContent: cloneContent, moveUpContent: moveUpContent, moveDownContent: moveDownContent, canMoveUp: index > 0, canMoveDown: index < section.children.length - 1 }))))),
+        section.children.length > 0 && (figma.widget.h(AutoLayout, { width: "fill-parent", direction: "vertical", spacing: 8 }, section.children.map((content, index) => (figma.widget.h(ContentView, { key: content.id, content: content, deleteContent: deleteContent, editContent: editContent, cloneContent: cloneContent, moveUpContent: moveUpContent, moveDownContent: moveDownContent, canMoveUp: index > 0, canMoveDown: index < section.children.length - 1, pages: pages }))))),
         figma.widget.h(AutoLayout, { width: "fill-parent", horizontalAlignItems: "center", padding: 12, cornerRadius: 4, fill: "#0000FF", hoverStyle: { fill: "#1717d8" }, onClick: addContent },
             figma.widget.h(Text, { fontSize: 14, fontWeight: 600, fill: "#ffffff" }, "Add Content"))));
 };

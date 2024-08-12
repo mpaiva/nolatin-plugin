@@ -7,17 +7,17 @@ const ImageContent = ({ content, editContent }: ImageContentProps) => {
   return (
     <>
       <LabeledInput
-        label="Image Description"
-        value={content.title}
-        onTextEditEnd={(e) => editContent(content.id, 'title', e.characters)}
-      />
-      <LabeledInput
-        label="Image URL"
+        label="Source (URL):"
         value={content.url}
         onTextEditEnd={(e) => editContent(content.id, 'url', e.characters)}
       />
       <LabeledInput
-        label="Image Caption"
+        label="Alternative text:"
+        value={content.title}
+        onTextEditEnd={(e) => editContent(content.id, 'title', e.characters)}
+      />
+      <LabeledInput
+        label="Captions:"
         value={content.description}
         onTextEditEnd={(e) => editContent(content.id, 'description', e.characters)}
       />

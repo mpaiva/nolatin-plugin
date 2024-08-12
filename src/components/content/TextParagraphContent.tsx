@@ -8,7 +8,7 @@ const TextParagraphContent = ({ content, editContent }: TextParagraphContentProp
   return (
     <>
       <LabeledInput
-        label="Paragraph Text"
+        label="Paragraph:"
         value={content.title}
         onTextEditEnd={(e) => editContent(content.id, 'title', e.characters)}
       />

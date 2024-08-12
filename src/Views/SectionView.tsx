@@ -11,6 +11,7 @@ interface SectionViewProps {
   toggleDropdown: () => void;
   canMoveUp: boolean;
   canMoveDown: boolean;
+  pages: { id: string; title: string }[];
 }
 
 const SectionView = ({
@@ -25,6 +26,7 @@ const SectionView = ({
   toggleDropdown,
   canMoveUp,
   canMoveDown,
+  pages
 }: SectionViewProps) => {
   const addContent = () => {
     const contentId = randomId();
@@ -161,6 +163,7 @@ const SectionView = ({
               moveDownContent={moveDownContent}
               canMoveUp={index > 0}
               canMoveDown={index < section.children.length - 1}
+              pages={pages}
             />
           ))}
         </AutoLayout>

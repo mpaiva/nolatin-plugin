@@ -93,6 +93,7 @@ const Widget = () => {
               deletePage={deletePage}
               editPage={editPage}
               updatePageSections={updatePageSections}
+              pages={pages}
             />
           ))}
         </AutoLayout>

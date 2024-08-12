@@ -1,6 +1,4 @@
-// LabeledSelect.tsx
-
-interface LabeledSelectProps {
+interface LabeledComboBoxProps {
   label: string;
   options: { label: string; value: string }[];
   value: string;
@@ -10,33 +8,34 @@ interface LabeledSelectProps {
   onToggle: () => void;
 }
 
-const LabeledSelect = ({ label, options, value, onChange, placeholder, isOpen, onToggle }: LabeledSelectProps) => {
+const LabeledComboBox = ({ label, options, value, onChange, placeholder, isOpen, onToggle }: LabeledComboBoxProps) => {
   const selectedOption = options.find(option => option.value === value);
-  const displayValue = selectedOption ? selectedOption.label : placeholder;
+  const displayValue = selectedOption ? selectedOption.label : value || placeholder;
 
   return (
     <AutoLayout direction="vertical" width="fill-parent" spacing={4}>
-      <Text 
-        fontSize={16} 
-        fontWeight={500} 
-        width="fill-parent">
+      <Text fontSize={16} fontWeight={500} width="fill-parent">
         {label}
       </Text>
       <AutoLayout direction="vertical" width="fill-parent" spacing={8}>
-        <AutoLayout onClick={onToggle} verticalAlignItems="center" cornerRadius={4} fill="#FFF" width="fill-parent" padding={8} strokeWidth={1} stroke="#000">
-          <Text
-            fill="#000000"
-            width="fill-parent"
+        <AutoLayout verticalAlignItems="center" cornerRadius={4} fill="#FFF" width="fill-parent" padding={8} strokeWidth={1} stroke="#000">
+          <Input
+            value={displayValue} 
+            onTextEditEnd={(e) => {
+              const newValue = e.characters.trim();
+              if (newValue) {
+                onChange(newValue);  
+              }
+            }} 
+            placeholder={placeholder}
             fontSize={16}
             fontWeight={500}
-          >
-            {displayValue || placeholder}
-          </Text>
-          <SVG src={ArrowDownSvg} />
+            width="fill-parent"
+          />
+          <SVG src={ArrowDownSvg} onClick={onToggle} />
         </AutoLayout>
         {isOpen && (
           <AutoLayout 
-            y={24} 
             width={"fill-parent"} 
             direction="vertical" 
             fill="#fff" 
@@ -63,8 +62,8 @@ const LabeledSelect = ({ label, options, value, onChange, placeholder, isOpen, o
                 key={option.value}
                 width="fill-parent"
                 onClick={() => {
-                  onChange(option.value);
-                  onToggle(); // Close dropdown after selecting an option
+                  onChange(option.value);  
+                  onToggle(); 
                 }}
                 padding={{ vertical: 4 }}
               >
@@ -79,5 +78,3 @@ const LabeledSelect = ({ label, options, value, onChange, placeholder, isOpen, o
     </AutoLayout>
   );
 };
-
- 

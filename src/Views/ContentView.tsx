@@ -9,6 +9,7 @@ interface ContentViewProps {
   moveDownContent: (contentId: string) => void;
   canMoveUp: boolean;
   canMoveDown: boolean;
+  pages: { id: string; title: string }[];
 }
 const ContentView = ({
   content,
@@ -19,6 +20,7 @@ const ContentView = ({
   moveDownContent,
   canMoveUp,
   canMoveDown,
+  pages
 }: ContentViewProps) => {
   const [contentDropdownOpen, setContentDropdownOpen] = useSyncedState<string | null>("contentDropdownOpen", null);
 
@@ -31,7 +33,7 @@ const ContentView = ({
   };
 
   return (
-    <AutoLayout width="fill-parent" direction="vertical" spacing={12} padding={8} fill="#f8f8f8" cornerRadius={4} stroke="#ddd">
+    <AutoLayout width="fill-parent" direction="vertical" spacing={12} padding={8} fill="#F8F8F8" cornerRadius={4} stroke="#A1A1A1">
       <AutoLayout width="fill-parent" direction="horizontal" spacing={8}>
         <AutoLayout width="fill-parent" padding={{ vertical: 4 }}>
           <Dropdown
@@ -51,11 +53,11 @@ const ContentView = ({
         </AutoLayout>
       </AutoLayout>
       {content.type === 'Section Title with description' ? (
-        <SubSectionContent content={content} editContent={editContent} />
+        <SubSectionContent content={content} editContent={editContent} pages={pages} />
       ) : content.type === 'Button' ? (
-        <ButtonContent content={content} editContent={editContent} />
+        <ButtonContent content={content} editContent={editContent} pages={pages} />
       ) : content.type === 'Text link' ? (
-        <TextLinkContent content={content} editContent={editContent} />
+        <TextLinkContent content={content} editContent={editContent} pages={pages} />
       ) : content.type === 'Input field' ? (
         <InputTextContent content={content} editContent={editContent} />
       ) : content.type === 'Select field' ? (
@@ -75,7 +77,7 @@ const ContentView = ({
       ) : content.type === 'Heading text' ? (
         <HeadingTextContent content={content} editContent={editContent} />
       ) : content.type === 'Heading link' ? (
-        <HeadingLinkContent content={content} editContent={editContent} />
+        <HeadingLinkContent content={content} editContent={editContent} pages={pages} />
       ) : (
         <DefaultContent content={content} editContent={editContent} />
       )}

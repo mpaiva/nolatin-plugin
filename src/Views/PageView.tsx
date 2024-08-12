@@ -5,9 +5,10 @@ interface PageViewProps {
   deletePage: (pageId: string) => void;
   editPage: (pageId: string, field: 'title' | 'description', value: string) => void;
   updatePageSections: (pageId: string, sections: Section[]) => void;
+  pages: { id: string; title: string }[];
 }
 
-const PageView = ({ pageId, page, deletePage, editPage, updatePageSections }: PageViewProps) => {
+const PageView = ({ pageId, page, deletePage, editPage, updatePageSections, pages }: PageViewProps) => {
   const [openDropdown, setOpenDropdown] = useSyncedState<string | null>("openDropdown", null);
 
   const addSection = () => {
@@ -77,6 +78,8 @@ const PageView = ({ pageId, page, deletePage, editPage, updatePageSections }: Pa
     setOpenDropdown(openDropdown === sectionId ? null : sectionId);
   };
 
+ 
+
   return (
     <AutoLayout width={350} direction="vertical" spacing={4} fill="#FFFFFF">
       <AutoLayout width="fill-parent" height={8} fill="#b2b2e5"></AutoLayout>
@@ -122,6 +125,7 @@ const PageView = ({ pageId, page, deletePage, editPage, updatePageSections }: Pa
                 toggleDropdown={() => toggleDropdown(section.id)}
                 canMoveUp={index > 0}
                 canMoveDown={index < page.sections.length - 1}
+                pages={pages}
               />
             ))}
           </AutoLayout>

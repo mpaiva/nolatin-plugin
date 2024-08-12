@@ -1,10 +1,11 @@
 interface SubSectionContentProps {
   content: Content;
   editContent: (contentId: string, field: keyof Content, value: string | Content[]) => void;
+  pages: { id: string; title: string }[];
 }
 
 
-const SubSectionContent = ({ content, editContent }: SubSectionContentProps) => {
+const SubSectionContent = ({ content, editContent, pages }: SubSectionContentProps) => {
 
   const addContent = () => {
     const contentId = randomId();
@@ -81,6 +82,7 @@ const SubSectionContent = ({ content, editContent }: SubSectionContentProps) => 
               }}
               canMoveUp={index > 0}
               canMoveDown={index < content.children.length - 1}
+              pages={pages}
             />
           ))}
         </AutoLayout>

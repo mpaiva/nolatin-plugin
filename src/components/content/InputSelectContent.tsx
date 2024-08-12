@@ -8,7 +8,7 @@ const InputSelectContent = ({ content, editContent }: InputSelectContentProps) =
   return (
     <>
       <LabeledInput
-        label="Input Label"
+        label="Label:"
         value={content.title}
         onTextEditEnd={(e) => editContent(content.id, 'title', e.characters)}
       />
