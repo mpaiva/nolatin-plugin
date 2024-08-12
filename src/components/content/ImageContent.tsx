@@ -21,6 +21,25 @@ const ImageContent = ({ content, editContent }: ImageContentProps) => {
         value={content.description}
         onTextEditEnd={(e) => editContent(content.id, 'description', e.characters)}
       />
+      {content.url ? (
+      <AutoLayout direction="vertical" width="fill-parent" spacing={4}>
+        <Text 
+          fontSize={16} 
+          fontWeight={500} 
+          width="fill-parent">
+          Preview:
+        </Text>
+          <AutoLayout width="fill-parent" height={190} stroke="#A1A1A1" cornerRadius={4} overflow="hidden">
+            <Image
+              src={content.url}
+              width="fill-parent"
+              height="fill-parent"
+              minHeight={190}
+            />
+          </AutoLayout>
+      </AutoLayout>
+       )
+      : null}
     </>
   );
 };

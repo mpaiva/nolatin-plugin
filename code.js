@@ -1,5 +1,5 @@
 const { widget } = figma;
-const { useSyncedState, useSyncedMap, usePropertyMenu, AutoLayout, Input, SVG, Frame, waitForTask, Text, } = widget;
+const { useSyncedState, useSyncedMap, usePropertyMenu, AutoLayout, Input, SVG, Frame, Image, waitForTask, Text, } = widget;
 const Widget = () => {
     const [pages, setPages] = useSyncedState("pages", []);
     const addPage = () => {
@@ -227,7 +227,12 @@ const ImageContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
         figma.widget.h(LabeledInput, { label: "Source (URL):", value: content.url, onTextEditEnd: (e) => editContent(content.id, 'url', e.characters) }),
         figma.widget.h(LabeledInput, { label: "Alternative text:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
-        figma.widget.h(LabeledInput, { label: "Captions:", value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
+        figma.widget.h(LabeledInput, { label: "Captions:", value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) }),
+        content.url ? (figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent", spacing: 4 },
+            figma.widget.h(Text, { fontSize: 16, fontWeight: 500, width: "fill-parent" }, "Preview:"),
+            figma.widget.h(AutoLayout, { width: "fill-parent", height: 190, stroke: "#A1A1A1", cornerRadius: 4, overflow: "hidden" },
+                figma.widget.h(Image, { src: content.url, width: "fill-parent", height: "fill-parent", minHeight: 190 }))))
+            : null));
 };
 const InputSelectContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,

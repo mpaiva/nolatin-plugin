@@ -8,6 +8,7 @@ const {
   Input,
   SVG,
   Frame,
+  Image,
   waitForTask,
   Text,
 } = widget;
