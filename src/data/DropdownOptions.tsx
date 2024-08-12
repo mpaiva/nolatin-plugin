@@ -31,9 +31,9 @@ const inputOptions = [
   { label: 'Password', value: 'password' },
   { label: 'Number', value: 'number' },
   { label: 'Date', value: 'date' },
-  { label: 'Date and Time', value: 'date and time' },
+  { label: 'Date and Time', value: 'time' },
   { label: 'Email', value: 'email' },
-  { label: 'Telephone', value: 'telephone' },
-  { label: 'Slider Range', value: 'slider range' },
-  { label: 'Upload File', value: 'upload file' },
+  { label: 'Telephone', value: 'tel' },
+  { label: 'Slider Range', value: 'range' },
+  { label: 'Upload File', value: 'file' },
 ];
