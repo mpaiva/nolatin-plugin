@@ -6,9 +6,10 @@ interface PageViewProps {
   editPage: (pageId: string, field: 'title' | 'description', value: string) => void;
   updatePageSections: (pageId: string, sections: Section[]) => void;
   pages: { id: string; title: string }[];
+  pageSize: string;
 }
 
-const PageView = ({ pageId, page, deletePage, editPage, updatePageSections, pages }: PageViewProps) => {
+const PageView = ({ pageId, page, deletePage, editPage, updatePageSections, pages, pageSize }: PageViewProps) => {
   const [openDropdown, setOpenDropdown] = useSyncedState<string | null>("openDropdown", null);
 
   const addSection = () => {
@@ -81,7 +82,7 @@ const PageView = ({ pageId, page, deletePage, editPage, updatePageSections, page
  
 
   return (
-    <AutoLayout width={350} direction="vertical" spacing={4} fill="#FFFFFF">
+    <AutoLayout width={parseInt(pageSize)} direction="vertical" spacing={4} fill="#FFFFFF">
       <AutoLayout width="fill-parent" height={8} fill="#b2b2e5"></AutoLayout>
       <AutoLayout width="fill-parent" direction="vertical" spacing={16} padding={8}>
         <AutoLayout width="fill-parent" direction="vertical" spacing={8}>

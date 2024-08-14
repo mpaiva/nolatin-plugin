@@ -9,12 +9,18 @@ const {
   SVG,
   Frame,
   Image,
+  Rectangle,
   waitForTask,
   Text,
 } = widget;
 
+
+
 const Widget = () => {
   const [pages, setPages] = useSyncedState<Page[]>("pages", []);
+
+  const [pageSize, setPageSize] = useSyncedState('pageSize', '350');
+  const sizeOptions = [{option: '350', label: "Small"}, {option: '500', label: "Medium"}, {option: '750', label: "Large"}]
 
   const addPage = () => {
     const pageId = randomId();
@@ -58,21 +64,30 @@ const Widget = () => {
         tooltip: "Pages",
         icon: '', // No icon, just a text tooltip
       },
-      { 
-        itemType: "separator" as const 
-      },
       {
         itemType: "action",
         propertyName: "add",
         tooltip: "Add Page",
         icon: AddIconLightSvg,
-      }
+      },
+      { 
+        itemType: "separator" as const 
+      },
+      {
+        itemType: 'dropdown',
+        propertyName: 'pageSize',
+        tooltip: 'Size selector',
+        selectedOption: pageSize,
+        options: sizeOptions,
+      },
     ],
-    (event) => {
-      if (event.propertyName === "add") {
+    ({propertyName, propertyValue}) => {
+      if (propertyName === "pageSize") {
+        setPageSize(propertyValue)
+      } else if (propertyName === "add") {
         addPage();
       }
-    }
+    },
   );
 
   return (
@@ -95,6 +110,7 @@ const Widget = () => {
               editPage={editPage}
               updatePageSections={updatePageSections}
               pages={pages}
+              pageSize={pageSize}
             />
           ))}
         </AutoLayout>

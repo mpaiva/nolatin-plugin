@@ -3,6 +3,7 @@
   editContent: (contentId: string, field: keyof Content, value: string) => void;
 }
 
+
 const ImageContent = ({ content, editContent }: ImageContentProps) => {
   return (
     <>
@@ -19,9 +20,14 @@ const ImageContent = ({ content, editContent }: ImageContentProps) => {
           width="fill-parent">
           Preview:
         </Text>
-          <AutoLayout width="fill-parent" height={190} stroke="#A1A1A1" cornerRadius={4} overflow="hidden">
-            <Image
-              src={content.url}
+          <AutoLayout fill="#FFFFFF" width="fill-parent" height={190} stroke="#A1A1A1" cornerRadius={4} overflow="hidden">
+            <Rectangle
+              fill={{
+                type: "image",
+                scaleMode: 'fit',
+                src: content.url
+              }}
+              cornerRadius={8}
               width="fill-parent"
               height="fill-parent"
               minHeight={190}
