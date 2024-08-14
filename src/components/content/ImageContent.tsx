@@ -11,16 +11,6 @@ const ImageContent = ({ content, editContent }: ImageContentProps) => {
         value={content.url}
         onTextEditEnd={(e) => editContent(content.id, 'url', e.characters)}
       />
-      <LabeledInput
-        label="Alternative text:"
-        value={content.title}
-        onTextEditEnd={(e) => editContent(content.id, 'title', e.characters)}
-      />
-      <LabeledInput
-        label="Captions:"
-        value={content.description}
-        onTextEditEnd={(e) => editContent(content.id, 'description', e.characters)}
-      />
       {content.url ? (
       <AutoLayout direction="vertical" width="fill-parent" spacing={4}>
         <Text 
@@ -40,6 +30,17 @@ const ImageContent = ({ content, editContent }: ImageContentProps) => {
       </AutoLayout>
        )
       : null}
+      <LabeledInput
+        label="Alternative text:"
+        value={content.title}
+        onTextEditEnd={(e) => editContent(content.id, 'title', e.characters)}
+      />
+      <LabeledInput
+        label="Captions:"
+        value={content.description}
+        onTextEditEnd={(e) => editContent(content.id, 'description', e.characters)}
+      />
+
     </>
   );
 };
