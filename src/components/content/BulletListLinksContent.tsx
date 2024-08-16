@@ -9,6 +9,7 @@ const BulletListLinksContent = ({ content, editContent }: BulletListLinksContent
     <>
       <LabeledInput
         label='List Items: Wrap each item in double quotes (example: "label1, url1" "label2, url2")'
+        textarea
         value={content.description}
         onTextEditEnd={(e) => editContent(content.id, 'description', e.characters)}
       />

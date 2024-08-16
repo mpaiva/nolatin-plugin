@@ -43,6 +43,7 @@ const ImageContent = ({ content, editContent }: ImageContentProps) => {
       />
       <LabeledInput
         label="Captions:"
+        textarea
         value={content.description}
         onTextEditEnd={(e) => editContent(content.id, 'description', e.characters)}
       />

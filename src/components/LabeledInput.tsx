@@ -5,9 +5,10 @@ interface LabeledInputProps {
   value: string;
   onTextEditEnd: (e: any) => void;
   placeholder?: string;
+  textarea?:boolean;
 }
 
-const LabeledInput = ({ label, value, onTextEditEnd, placeholder }: LabeledInputProps) => {
+const LabeledInput = ({ label, value, onTextEditEnd, placeholder, textarea = false }: LabeledInputProps) => {
   return (
     <AutoLayout direction="vertical" width="fill-parent" spacing={4}>
       <Text 
@@ -30,10 +31,11 @@ const LabeledInput = ({ label, value, onTextEditEnd, placeholder }: LabeledInput
           cornerRadius: 4,
           fill: "#FFF",
           overflow: "visible",
+          minHeight: textarea ? 92 : null, 
           padding : 8,
           stroke: "#000000",
           strokeWidth: 1,
-          verticalAlignItems: "center",
+          verticalAlignItems: "start",
         }}
       />
     </AutoLayout>

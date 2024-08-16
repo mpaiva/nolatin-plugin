@@ -9,6 +9,7 @@ const NumberListTextContent = ({ content, editContent }: NumberListTextContentPr
     <>
       <LabeledInput
         label='List Items: Wrap each item in double quotes ("item 1", "item2")'
+        textarea
         value={content.description}
         onTextEditEnd={(e) => editContent(content.id, 'description', e.characters)}
       />

@@ -128,7 +128,7 @@ const LabeledComboBox = ({ label, options, value, onChange, placeholder, isOpen,
                 }, padding: { vertical: 4 } },
                 figma.widget.h(Text, { fontSize: 16 }, option.label)))))))));
 };
-const LabeledInput = ({ label, value, onTextEditEnd, placeholder }) => {
+const LabeledInput = ({ label, value, onTextEditEnd, placeholder, textarea = false }) => {
     return (figma.widget.h(AutoLayout, { direction: "vertical", width: "fill-parent", spacing: 4 },
         figma.widget.h(Text, { fontSize: 16, fontWeight: 500, width: "fill-parent" }, label),
         figma.widget.h(Input, { value: value, 
@@ -140,10 +140,11 @@ const LabeledInput = ({ label, value, onTextEditEnd, placeholder }) => {
                 cornerRadius: 4,
                 fill: "#FFF",
                 overflow: "visible",
+                minHeight: textarea ? 92 : null,
                 padding: 8,
                 stroke: "#000000",
                 strokeWidth: 1,
-                verticalAlignItems: "center",
+                verticalAlignItems: "start",
             } })));
 };
 // LabeledSelect.tsx
@@ -192,11 +193,11 @@ const WidgetContainer = (props) => (figma.widget.h(AutoLayout, { direction: "ver
     figma.widget.h(AutoLayout, { spacing: 16, padding: 12, direction: "vertical" }, props.children)));
 const BulletListLinksContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: 'List Items: Wrap each item in double quotes (example: "label1, url1" "label2, url2")', value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
+        figma.widget.h(LabeledInput, { label: 'List Items: Wrap each item in double quotes (example: "label1, url1" "label2, url2")', textarea: true, value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
 const BulletListTextContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: 'List Items: Wrap each item in double quotes ("item 1", "item2")', value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
+        figma.widget.h(LabeledInput, { label: 'List Items: Wrap each item in double quotes ("item 1", "item2")', textarea: true, value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
 const ButtonContent = ({ content, editContent, pages }) => {
     const pageOptions = pages.map(page => ({
@@ -248,12 +249,12 @@ const ImageContent = ({ content, editContent }) => {
                     }, cornerRadius: 8, width: "fill-parent", height: "fill-parent", minHeight: 190 }))))
             : null,
         figma.widget.h(LabeledInput, { label: "Alternative text:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
-        figma.widget.h(LabeledInput, { label: "Captions:", value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
+        figma.widget.h(LabeledInput, { label: "Captions:", textarea: true, value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
 const InputSelectContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
         figma.widget.h(LabeledInput, { label: "Label:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) }),
-        figma.widget.h(LabeledInput, { label: 'Options: Wrap each item in double quotes (example: "option1", "option2")', value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
+        figma.widget.h(LabeledInput, { label: 'Options: Wrap each item in double quotes (example: "option1", "option2")', textarea: true, value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
 // InputTextContent.tsx
 const InputTextContent = ({ content, editContent }) => {
@@ -267,11 +268,11 @@ const InputTextContent = ({ content, editContent }) => {
 };
 const NumberListLinksContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: 'List Items: Wrap each item in double quotes (example: "label1, url1" "label2, url2")', value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
+        figma.widget.h(LabeledInput, { label: 'List Items: Wrap each item in double quotes (example: "label1, url1" "label2, url2")', textarea: true, value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
 const NumberListTextContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: 'List Items: Wrap each item in double quotes ("item 1", "item2")', value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
+        figma.widget.h(LabeledInput, { label: 'List Items: Wrap each item in double quotes ("item 1", "item2")', textarea: true, value: content.description, onTextEditEnd: (e) => editContent(content.id, 'description', e.characters) })));
 };
 const SubSectionContent = ({ content, editContent, pages }) => {
     const addContent = () => {
@@ -339,7 +340,7 @@ const TextLinkContent = ({ content, editContent, pages }) => {
 };
 const TextParagraphContent = ({ content, editContent }) => {
     return (figma.widget.h(figma.widget.Fragment, null,
-        figma.widget.h(LabeledInput, { label: "Paragraph:", value: content.title, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) })));
+        figma.widget.h(LabeledInput, { label: "Paragraph:", value: content.title, textarea: true, onTextEditEnd: (e) => editContent(content.id, 'title', e.characters) })));
 };
 const sectionOptions = [
     { label: 'Section', value: 'Section' },

@@ -10,6 +10,7 @@ const TextParagraphContent = ({ content, editContent }: TextParagraphContentProp
       <LabeledInput
         label="Paragraph:"
         value={content.title}
+        textarea
         onTextEditEnd={(e) => editContent(content.id, 'title', e.characters)}
       />
     </>
